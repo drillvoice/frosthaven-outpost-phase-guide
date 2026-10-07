@@ -36,7 +36,7 @@ test('walks a full Outpost Phase and starts the next one', async ({ page }) => {
   await expect(page.locator('.log-row')).toContainText('Won scenario 5');
   await expect(page.locator('.log-row .pill')).toHaveCount(0); // logged as complete
 
-  await page.getByRole('button', { name: 'Party' }).click();
+  await page.getByRole('button', { name: 'Party', exact: true }).click();
   await expect(page.locator('.party-row')).toHaveCount(2);
 });
 
@@ -93,12 +93,12 @@ test('keeps each group separate by URL', async ({ page }) => {
 
   await page.goto('./#/g/theslayers');
   await expect(page.locator('.group-chip')).toHaveText('theslayers');
-  await page.getByRole('button', { name: 'Party' }).click();
+  await page.getByRole('button', { name: 'Party', exact: true }).click();
   await expect(page.locator('.party-row')).toHaveCount(0);
 
   await page.goto('./#/g/local');
   await expect(page.locator('.group-chip')).toHaveText('local');
-  await page.getByRole('button', { name: 'Party' }).click();
+  await page.getByRole('button', { name: 'Party', exact: true }).click();
   await expect(page.locator('.party-row')).toHaveCount(1);
 });
 
@@ -110,6 +110,6 @@ test('works offline once loaded', async ({ page, context }) => {
   await page.reload();
 
   await expect(page.getByRole('heading', { name: 'Outpost Phase' })).toBeVisible();
-  await page.getByRole('button', { name: 'Party' }).click();
+  await page.getByRole('button', { name: 'Party', exact: true }).click();
   await expect(page.locator('.party-row')).toHaveCount(1);
 });
