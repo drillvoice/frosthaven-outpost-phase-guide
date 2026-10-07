@@ -41,7 +41,7 @@ All steps, reminders and toggles live in
 | `calendar`     | `'markWeek'`: ticking marks the next calendar week               |
 
 Toggles are defined in `flags` at the top of the same file, with a `scope`
-of `phase` (resets each Outpost Phase), `character` (per character, resets)
+of `phase` (resets each Outpost Phase), `character` (per character, resets),
 `campaign` (kept), or `derived` (worked out from tracked state such as the
 calendar; never toggled by hand). Show a toggle under the step that raises it with
 `asks`, or at the top of a phase via the phase's `flags` array (for things
