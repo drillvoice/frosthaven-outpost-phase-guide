@@ -124,25 +124,24 @@ main {
   position: fixed;
   inset: auto 0 0 0;
   z-index: 5;
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  /* Tabs take width according to their label, so long labels ("Checklist")
+     borrow room from short ones ("Log") instead of being clipped. */
+  display: flex;
   padding-bottom: env(safe-area-inset-bottom);
   background: var(--surface);
   border-top: 1px solid var(--border);
 }
 
 .tabs button {
-  min-width: 0;
+  flex: 1 1 auto;
   min-height: 60px;
-  padding: 0 2px;
+  padding: 0 4px;
   border: 0;
   background: none;
   color: var(--muted);
-  /* Shrinks on narrow phones / large text settings so four tabs always fit. */
-  font-size: min(15px, 3.9vw);
+  /* Slightly smaller on very narrow phones so four tabs fit with large text. */
+  font-size: min(15px, 4.2vw);
   font-weight: 600;
-  overflow: hidden;
-  text-overflow: ellipsis;
   white-space: nowrap;
 }
 

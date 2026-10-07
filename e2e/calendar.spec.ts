@@ -133,8 +133,8 @@ test.describe('on a narrow phone with large text', () => {
 
   test('the calendar grid and tab bar fit without clipping', async ({ page }) => {
     await page.goto('./');
-    // Approximates an enlarged system text size.
-    await page.addStyleTag({ content: 'html { -webkit-text-size-adjust: 130% !important; }' });
+    // Approximates an enlarged system text size, with a wide font so the result doesn't depend on the machine's default font.
+    await page.addStyleTag({ content: "html { -webkit-text-size-adjust: 130% !important; } body { font-family: 'DejaVu Sans', 'Verdana', sans-serif !important; }" });
     await page.getByRole('button', { name: 'Calendar', exact: true }).click();
     await setUp(page, 9);
 
