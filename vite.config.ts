@@ -1,3 +1,4 @@
+/// <reference types="vitest/config" />
 import { defineConfig } from 'vite';
 import preact from '@preact/preset-vite';
 import { VitePWA } from 'vite-plugin-pwa';
@@ -7,6 +8,8 @@ import { VitePWA } from 'vite-plugin-pwa';
 // server rewrites are needed.
 export default defineConfig({
   base: './',
+  // Unit tests only; browser tests in e2e/ run under Playwright.
+  test: { include: ['src/**/*.test.ts'] },
   plugins: [
     preact(),
     VitePWA({
