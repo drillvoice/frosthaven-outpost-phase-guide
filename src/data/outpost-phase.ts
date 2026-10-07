@@ -13,9 +13,7 @@ import type { FlagDef, PhaseDef } from './types';
 
 export const flags: FlagDef[] = [
   // Passage of Time
-  { id: 'sectionOnCalendar', scope: 'phase', label: 'The box we marked has section number(s) in it' },
-  { id: 'seasonChange', scope: 'phase', label: 'That box completed a set of 10 (season changes)' },
-  { id: 'winter', scope: 'campaign', label: 'It is currently winter' },
+  { id: 'winter', scope: 'campaign', label: 'Season', choices: ['Summer', 'Winter'] },
 
   // Outpost Event
   { id: 'skipEvent', scope: 'phase', label: 'We were told not to resolve an outpost event this week' },
@@ -42,27 +40,20 @@ export const phases: PhaseDef[] = [
     id: 'time',
     title: 'Passage of Time',
     pages: '59',
-    flags: ['sectionOnCalendar', 'seasonChange', 'winter'],
+    flags: [],
     steps: [
       {
         id: 'time.mark',
-        title: 'Mark the next calendar box',
+        title: 'Mark the next calendar box and read any sections in it',
         reminder:
-          'Cross off the next empty box on the campaign sheet calendar (one box = one week). Then set the toggles above if it holds a section number or completes a set of 10.',
-      },
-      {
-        id: 'time.sections',
-        title: 'Read the section(s) in that box',
-        when: { all: ['sectionOnCalendar'] },
-        reminder:
-          'Read each section number in the box from the section book, one at a time, in any order. This includes numbers carried here from time that passed outside an Outpost Phase.',
+          'Cross off the next empty box on the campaign sheet calendar (one box = one week). If it holds section numbers, read each one from the section book, one at a time, in any order.',
       },
       {
         id: 'time.season',
-        title: 'Switch season',
-        when: { all: ['seasonChange'] },
+        title: 'Check the season',
+        asks: ['winter'],
         reminder:
-          'Summer becomes winter, or winter becomes summer. Flip the "winter" toggle above. It decides which outpost (and road) event deck you draw from.',
+          'If the box you marked completed a set of 10, the season flips. Set the selector to match the calendar: it decides which outpost event deck you draw from.',
       },
     ],
   },
@@ -70,7 +61,7 @@ export const phases: PhaseDef[] = [
     id: 'event',
     title: 'Outpost Event',
     pages: '60–61',
-    flags: ['skipEvent', 'attack', 'barracksWrecked'],
+    flags: ['skipEvent'],
     steps: [
       {
         id: 'event.skipped',
@@ -82,7 +73,7 @@ export const phases: PhaseDef[] = [
         id: 'event.drawSummer',
         title: 'Draw a summer outpost event',
         when: { none: ['skipEvent', 'winter'] },
-        reminder: 'Top card of the summer outpost event deck. Check the calendar season before drawing.',
+        reminder: 'Top card of the summer outpost event deck (season set in Passage of Time).',
       },
       {
         id: 'event.drawWinter',
@@ -101,14 +92,15 @@ export const phases: PhaseDef[] = [
         id: 'event.attackCheck',
         title: 'Check the back for an attack',
         when: { none: ['skipEvent'] },
-        reminder:
-          'An attack is printed below the outcomes on the back. If there is one, turn on the attack toggle above before ticking this.',
+        asks: ['attack'],
+        reminder: 'An attack is printed below the outcomes on the back of the card. If there is one, switch on the toggle below.',
       },
       {
         id: 'event.attack.read',
         group: 'Attack',
         title: 'Note attack value, targets and priority',
         when: { all: ['attack'], none: ['skipEvent'] },
+        asks: ['barracksWrecked'],
         reminder:
           'Attack value = what each defense check must meet or beat. The target number = how many buildings get hit. Priority = which non-wrecked buildings, in order; the party picks if none is given. A building can only be hit once.',
       },
@@ -184,14 +176,15 @@ export const phases: PhaseDef[] = [
     id: 'downtime',
     title: 'Downtime',
     pages: '62–67',
-    flags: ['levelUpDue', 'belowHalfProsperity', 'retiring', 'firstClassRetirement', 'newCharacter', 'building37'],
+    flags: ['building37'],
     steps: [
       {
         id: 'downtime.review',
         perCharacter: true,
-        title: 'Set this character\'s toggles',
+        title: 'Check what applies to this character',
+        asks: ['levelUpDue', 'belowHalfProsperity', 'retiring', 'firstClassRetirement', 'newCharacter'],
         reminder:
-          'Check XP against the next level, level against half prosperity (rounded up), and whether the personal quest is done. Any order is allowed for downtime; this list is just a sensible one.',
+          'Compare XP with the next level, level with half prosperity (rounded up), and check the personal quest. Downtime can be done in any order; this list is just a sensible one.',
       },
       {
         id: 'downtime.levelUp',
@@ -279,13 +272,14 @@ export const phases: PhaseDef[] = [
     id: 'construction',
     title: 'Construction',
     pages: '68',
-    flags: ['building', 'secondBuild', 'prosperityRose', 'anyWrecked'],
+    flags: [],
     steps: [
       {
         id: 'build.decide',
         title: 'Decide what to build, upgrade and rebuild',
+        asks: ['building', 'secondBuild', 'anyWrecked'],
         reminder:
-          'One build or upgrade by default; a second costs 2 morale. Rebuilds are unlimited but come after builds/upgrades. Set the toggles above to match.',
+          'One build or upgrade by default; a second costs 2 morale. Rebuilds are unlimited but come after builds/upgrades.',
       },
       {
         id: 'build.pay',
@@ -304,6 +298,7 @@ export const phases: PhaseDef[] = [
         id: 'build.apply',
         title: 'Place stickers, update the building deck',
         when: { all: ['building'] },
+        asks: ['prosperityRose'],
         reminder:
           'Build: cover the cost with the level 1 sticker and add its card to the deck in number order. Upgrade: sticker over the old one and swap the card. Gain prosperity and apply any one-time effects.',
       },
@@ -321,7 +316,7 @@ export const phases: PhaseDef[] = [
         optional: true,
         when: { all: ['anyWrecked'] },
         reminder:
-          'Any number, after builds/upgrades. Pay the cost on the wrecked side from the town supply and flip the card back. Turn off the "wrecked" toggle once none remain.',
+          'Any number, after builds/upgrades. Pay the cost on the wrecked side from the town supply and flip the card back. Switch off "buildings are wrecked" once none remain.',
       },
     ],
   },

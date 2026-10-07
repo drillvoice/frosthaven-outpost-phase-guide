@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { flags, phases } from '../data/outpost-phase';
 import { initialState, reduce, type Action } from '../state/actions';
 import type { AppState } from '../state/types';
-import { activePhaseId, evalCondition, phaseProgress, visibleFlags, visibleSteps } from './checklist';
+import { activePhaseId, evalCondition, phaseProgress, shownFlags, visibleFlags, visibleSteps } from './checklist';
 
 const NOW = '2026-01-01T00:00:00.000Z';
 const phase = (id: string) => phases.find((p) => p.id === id)!;
@@ -32,9 +32,9 @@ describe('evalCondition', () => {
 describe('visibility', () => {
   it('hides conditional steps until toggled', () => {
     const s = initialState(NOW);
-    expect(keys(s, 'time')).toEqual(['time.mark']);
-    const s2 = apply(s, { type: 'setPhaseFlag', flagId: 'sectionOnCalendar', value: true });
-    expect(keys(s2, 'time')).toEqual(['time.mark', 'time.sections']);
+    expect(keys(s, 'construction')).toEqual(['build.decide']);
+    const s2 = apply(s, { type: 'setPhaseFlag', flagId: 'building', value: true });
+    expect(keys(s2, 'construction')).toEqual(['build.decide', 'build.pay', 'build.apply']);
   });
 
   it('switches summer/winter draw by the campaign winter flag', () => {
@@ -67,12 +67,15 @@ describe('visibility', () => {
     expect(keys(s, 'downtime')).toContain('downtime.purchase@a');
   });
 
-  it('splits toggles by scope and respects showWhen', () => {
+  it('shows inline toggles per character and respects showWhen', () => {
     const s = withParty();
     expect(visibleFlags(phase('downtime'), flags, s).map((f) => f.id)).toEqual(['building37']);
-    expect(visibleFlags(phase('downtime'), flags, s, 'a').map((f) => f.id)).not.toContain('firstClassRetirement');
+    const asks = phase('downtime').steps.find((st) => st.id === 'downtime.review')!.asks!;
+    const ids = (st: AppState, c: string) => shownFlags(asks, flags, st, c).map((f) => f.id);
+    expect(ids(s, 'a')).not.toContain('firstClassRetirement');
     const r = apply(s, { type: 'setCharFlag', charId: 'a', flagId: 'retiring', value: true });
-    expect(visibleFlags(phase('downtime'), flags, r, 'a').map((f) => f.id)).toContain('firstClassRetirement');
+    expect(ids(r, 'a')).toContain('firstClassRetirement');
+    expect(ids(r, 'b')).not.toContain('firstClassRetirement');
   });
 });
 
@@ -91,10 +94,10 @@ describe('progress and active phase', () => {
   });
 
   it('goes back to a phase if a newly revealed step is unticked', () => {
-    let s = tickAll(withParty(), 'time');
+    let s = tickAll(tickAll(withParty(), 'time'), 'event');
+    expect(activePhaseId(phases, flags, s)).toBe('operations');
+    s = apply(s, { type: 'setPhaseFlag', flagId: 'attack', value: true });
     expect(activePhaseId(phases, flags, s)).toBe('event');
-    s = apply(s, { type: 'setPhaseFlag', flagId: 'seasonChange', value: true });
-    expect(activePhaseId(phases, flags, s)).toBe('time');
   });
 
   it('does not complete Downtime without a party', () => {
@@ -103,9 +106,9 @@ describe('progress and active phase', () => {
   });
 
   it('ignores ticks on steps that are now hidden', () => {
-    let s = apply(initialState(NOW), { type: 'setPhaseFlag', flagId: 'sectionOnCalendar', value: true });
-    s = tickAll(s, 'time');
-    s = apply(s, { type: 'setPhaseFlag', flagId: 'sectionOnCalendar', value: false });
-    expect(phaseProgress(phase('time'), flags, s)).toEqual({ done: 1, total: 1, complete: true });
+    let s = apply(initialState(NOW), { type: 'setPhaseFlag', flagId: 'building', value: true });
+    s = tickAll(s, 'construction');
+    s = apply(s, { type: 'setPhaseFlag', flagId: 'building', value: false });
+    expect(phaseProgress(phase('construction'), flags, s)).toEqual({ done: 1, total: 1, complete: true });
   });
 });

@@ -306,6 +306,45 @@ h2 {
   outline-offset: 2px;
 }
 
+/* Inline toggles sit under the step that asks the question. */
+.toggles.is-inline {
+  margin: -4px 6px 8px 50px;
+  padding: 2px 10px;
+  border: 0;
+  border-left: 3px solid var(--border);
+}
+
+.toggles.is-inline .toggle {
+  min-height: 48px;
+}
+
+.segmented {
+  display: inline-flex;
+  flex: none;
+  padding: 3px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface-2);
+}
+
+.segmented button {
+  min-width: 84px;
+  min-height: 40px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  color: var(--muted);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.segmented button[aria-checked='true'] {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
 /* Steps ------------------------------------------------------------------- */
 
 .steps {
