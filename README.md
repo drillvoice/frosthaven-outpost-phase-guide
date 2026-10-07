@@ -46,13 +46,28 @@ duplicate ids, and phases that could end up with no visible steps.
 ```sh
 npm install
 npm run dev      # http://localhost:5173 (also reachable on your LAN)
-npm test
+npm test         # unit tests (logic, state, data checks)
+npm run test:e2e # browser tests on a phone-sized Chromium (builds first)
+npm run check    # everything CI runs
 npm run build    # static site in dist/
 npm run preview  # serve the production build (service worker active)
 ```
 
 Stack: Vite + Preact + TypeScript + vite-plugin-pwa (Workbox). About 15 KB of
 gzipped JS.
+
+### Tests
+
+- `src/**/*.test.ts` (Vitest): step data sanity checks, checklist logic,
+  state actions, saving/loading, and compatibility with saved data.
+- `e2e/` (Playwright): full Outpost Phase walk-through, toggles, resume
+  after reload, groups by URL, and offline use, against the production
+  build with its service worker.
+- `src/state/__fixtures__/save-v1.json` is a frozen copy of saved data.
+  Don't edit it; when the saved shape changes, bump `schemaVersion`, add a
+  migration and a new fixture, and keep the old one loading.
+
+The CI workflow runs all of this on every pull request.
 
 ### Code layout
 

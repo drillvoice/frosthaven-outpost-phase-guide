@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "party": {
+    "c1": { "name": "Ann", "className": "Drifter", "order": 0 },
+    "c2": { "name": "Bo", "className": "Blinkblade", "order": 1 }
+  },
+  "campaignFlags": { "winter": true, "building37": false },
+  "houseNotes": { "ops.resolve": "Remember the Garden bonus" },
+  "log": {
+    "l1": { "startedAt": "2026-10-01T18:00:00.000Z", "endedAt": "2026-10-01T19:30:00.000Z", "complete": true, "note": "Won scenario 5" }
+  },
+  "current": {
+    "startedAt": "2026-10-07T18:00:00.000Z",
+    "phaseFlags": { "attack": true },
+    "charFlags": { "c2": { "retiring": true } },
+    "checked": { "time.mark": true, "time.season": true, "event.drawWinter": true }
+  }
+}
