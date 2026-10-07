@@ -29,9 +29,9 @@ describe('outpost-phase data', () => {
     }
   });
 
-  it('shows every toggle somewhere', () => {
+  it('shows every hand-set toggle somewhere, and never a derived one', () => {
     const shown = new Set(phases.flatMap((p) => [...p.flags, ...p.steps.flatMap((s) => s.asks ?? [])]));
-    for (const f of flags) expect(shown.has(f.id), f.id).toBe(true);
+    for (const f of flags) expect(shown.has(f.id), f.id).toBe(f.scope !== 'derived');
   });
 
   it('never leaves a phase with zero visible steps, whatever its toggles', () => {

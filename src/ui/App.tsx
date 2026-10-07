@@ -1,13 +1,15 @@
 import { useEffect, useState } from 'preact/hooks';
+import { seasonAfter, weeksMarked } from '../logic/calendar';
 import { createStore, type Store } from '../state/store';
 import { localStorageAdapter } from '../state/storage';
 import { DEFAULT_GROUP, groupFromHash, hashForGroup } from '../route';
+import { CalendarView } from './CalendarView';
 import { Checklist } from './Checklist';
 import { LogView } from './LogView';
 import { PartyView } from './PartyView';
 import { useStoreState } from './util';
 
-type Tab = 'checklist' | 'party' | 'log';
+type Tab = 'checklist' | 'calendar' | 'party' | 'log';
 type Theme = 'dark' | 'light';
 
 const LAST_GROUP_KEY = 'fh-outpost:lastGroup';
@@ -78,12 +80,20 @@ function App({ store, group }: { store: Store; group: string }) {
     <>
       <header class="top">
         <h1>Outpost Phase</h1>
-        <span class="group-chip" title="Group">
-          {group}
+        <span class="chips">
+          {state.calendar && (
+            <button type="button" class="group-chip week-chip" onClick={() => go('calendar')}>
+              Week {weeksMarked(state.calendar)} · {seasonAfter(weeksMarked(state.calendar)) === 'winter' ? 'Winter' : 'Summer'}
+            </button>
+          )}
+          <span class="group-chip" title="Group">
+            {group}
+          </span>
         </span>
       </header>
       <main>
         {tab === 'checklist' && <Checklist state={state} dispatch={store.dispatch} onGoToParty={() => go('party')} />}
+        {tab === 'calendar' && <CalendarView state={state} dispatch={store.dispatch} />}
         {tab === 'party' && <PartyView state={state} dispatch={store.dispatch} />}
         {tab === 'log' && <LogView state={state} dispatch={store.dispatch} group={group} theme={theme} onTheme={setTheme} />}
       </main>
@@ -91,8 +101,9 @@ function App({ store, group }: { store: Store; group: string }) {
         {(
           [
             ['checklist', 'Checklist'],
+            ['calendar', 'Calendar'],
             ['party', 'Party'],
-            ['log', 'Log & settings'],
+            ['log', 'Log'],
           ] as [Tab, string][]
         ).map(([id, label]) => (
           <button type="button" key={id} class={tab === id ? 'is-current' : ''} aria-current={tab === id ? 'page' : undefined} onClick={() => go(id)}>

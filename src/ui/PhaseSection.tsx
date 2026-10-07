@@ -14,6 +14,7 @@ import {
 } from '../logic/checklist';
 import type { Action } from '../state/actions';
 import type { AppState } from '../state/types';
+import { TOTAL_WEEKS, entriesForWeek, seasonAfter, weeksMarked } from '../logic/calendar';
 import { FlagToggles } from './FlagToggles';
 import { StepRow } from './StepRow';
 
@@ -53,9 +54,16 @@ export function PhaseSection({ phase, index, state, dispatch, progress, isActive
               instance={s}
               checked={!!state.current.checked[s.key]}
               note={state.houseNotes[s.step.id] ?? ''}
-              onToggle={() => dispatch({ type: 'toggleStep', key: s.key })}
-              onNote={(text) => dispatch({ type: 'setHouseNote', stepId: s.step.id, text })}
+              onToggle={() =>
+                dispatch({
+                  type: 'toggleStep',
+                  key: s.key,
+                  ...(s.step.calendar === 'markWeek' ? { markWeek: { now: new Date().toISOString() } } : {}),
+                })
+              }
+              onNote={s.calendarEntryId ? undefined : (text) => dispatch({ type: 'setHouseNote', stepId: s.step.id, text })}
             >
+              {s.step.calendar === 'markWeek' && <CalendarWeekInfo state={state} />}
               {s.step.asks && (
                 <FlagToggles
                   inline
@@ -155,6 +163,31 @@ function CharacterBlock({ name, className, flags, value, onFlag, steps, checked,
           {renderSteps(steps)}
         </div>
       )}
+    </div>
+  );
+}
+
+/** Under "Mark the next calendar box": which week gets marked, and that week's notes. */
+function CalendarWeekInfo({ state }: { state: AppState }) {
+  const cal = state.calendar;
+  if (!cal) return <p class="step-aside">Tip: set up the Calendar tab and this step will mark the week and show its sections.</p>;
+  const week = state.current.markedWeek;
+  if (week === undefined) {
+    const next = weeksMarked(cal) + 1;
+    return <p class="step-aside">{next > TOTAL_WEEKS ? 'The calendar is full.' : `Ticking this marks week ${next} in the app.`}</p>;
+  }
+  const notes = entriesForWeek(cal, week).filter((e) => e.kind === 'note');
+  return (
+    <div class="step-aside">
+      <p>
+        Week {week} marked · now {seasonAfter(weeksMarked(cal))}
+      </p>
+      {notes.map((n) => (
+        <p class="cal-note" key={n.id}>
+          📝 {n.text}
+          {n.carried && <span class="pill">carried over</span>}
+        </p>
+      ))}
     </div>
   );
 }

@@ -6,13 +6,20 @@ import { localStorageAdapter, type StorageAdapter } from './storage';
 import { createStore } from './store';
 import type { AppState } from './types';
 import saveV1 from './__fixtures__/save-v1.json';
+import saveV2 from './__fixtures__/save-v2.json';
 
 // A copy of real saved data from schema v1. Never edit it: when the schema
 // changes, add save-v2.json alongside and keep this test passing, so groups
 // upgrading the app don't lose their progress.
 describe('saved data compatibility', () => {
-  it('loads a v1 save unchanged', () => {
-    expect(migrate(structuredClone(saveV1), '2030-01-01T00:00:00.000Z')).toEqual(saveV1);
+  it('upgrades a v1 save to v2 without losing anything', () => {
+    const s = migrate(structuredClone(saveV1), '2030-01-01T00:00:00.000Z');
+    expect(s).toEqual({ ...saveV1, schemaVersion: 2 });
+    expect(s.calendar).toBeUndefined(); // calendar waits for setup
+  });
+
+  it('loads a v2 save unchanged', () => {
+    expect(migrate(structuredClone(saveV2), '2030-01-01T00:00:00.000Z')).toEqual(saveV2);
   });
 
   it('resumes a v1 save where it left off', () => {

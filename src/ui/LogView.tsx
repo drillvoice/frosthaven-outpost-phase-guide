@@ -30,7 +30,7 @@ export function LogView({ state, dispatch, group, theme, onTheme }: Props) {
     if (!file) return;
     try {
       const data = JSON.parse(await file.text());
-      if (data?.schemaVersion !== 1) throw new Error('Not a backup from this app');
+      if (![1, 2].includes(data?.schemaVersion)) throw new Error('Not a backup from this app');
       if (confirm('Replace everything in this group with the backup?')) {
         dispatch({ type: 'replaceState', state: migrate(data, new Date().toISOString()) });
       }
@@ -48,7 +48,8 @@ export function LogView({ state, dispatch, group, theme, onTheme }: Props) {
           <li class="log-row" key={id}>
             <div>
               <div class="log-date">
-                {formatDate(e.endedAt)} {!e.complete && <span class="pill warn">unfinished</span>}
+                {formatDate(e.endedAt)}
+                {e.week !== undefined && <span class="log-week"> · Week {e.week}</span>} {!e.complete && <span class="pill warn">unfinished</span>}
               </div>
               {e.note && <p class="log-note">{e.note}</p>}
             </div>

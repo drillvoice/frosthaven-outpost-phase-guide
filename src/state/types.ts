@@ -14,6 +14,26 @@ export interface LogEntry {
   /** False if the phase was reset before every step was ticked. */
   complete: boolean;
   note?: string;
+  /** Calendar week marked during this phase, if the calendar is tracked. */
+  week?: number;
+}
+
+export type CalendarEntryKind = 'section' | 'note';
+
+export interface CalendarEntry {
+  week: number;
+  kind: CalendarEntryKind;
+  /** Section number (e.g. "32.3") or free-text note. */
+  text: string;
+  /** Moved forward because time passed outside an Outpost Phase. */
+  carried?: boolean;
+  createdAt: string;
+}
+
+export interface Calendar {
+  /** week number -> when it was marked. Stored per week (not a count) so syncing devices can't double-count. */
+  marked: Record<string, { at: string }>;
+  entries: Record<string, CalendarEntry>;
 }
 
 export interface CurrentPhase {
@@ -21,17 +41,21 @@ export interface CurrentPhase {
   phaseFlags: Record<string, boolean>;
   /** charId -> flagId -> value */
   charFlags: Record<string, Record<string, boolean>>;
-  /** 'stepId' or 'stepId@charId' */
+  /** 'stepId', 'stepId@charId', or 'cal:entryId' for calendar sections */
   checked: Record<string, true>;
+  /** The calendar week marked by this Outpost Phase's Passage of Time step. */
+  markedWeek?: number;
 }
 
 export interface AppState {
-  schemaVersion: 1;
+  schemaVersion: 2;
   party: Record<string, Character>;
   campaignFlags: Record<string, boolean>;
   /** stepId -> note; survives "Start new Outpost Phase". */
   houseNotes: Record<string, string>;
   log: Record<string, LogEntry>;
   current: CurrentPhase;
-  // Future: campaign?: { resources, buildings, calendar, morale, prosperity }
+  /** Absent until the group sets up calendar tracking. */
+  calendar?: Calendar;
+  // Future: resources, buildings, morale, prosperity
 }
