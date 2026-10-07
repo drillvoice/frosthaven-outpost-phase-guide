@@ -5,6 +5,7 @@ import {
   flagLookup,
   groupSteps,
   hasPerCharacterSteps,
+  shownFlags,
   sortedParty,
   visibleFlags,
   visibleSteps,
@@ -54,7 +55,16 @@ export function PhaseSection({ phase, index, state, dispatch, progress, isActive
               note={state.houseNotes[s.step.id] ?? ''}
               onToggle={() => dispatch({ type: 'toggleStep', key: s.key })}
               onNote={(text) => dispatch({ type: 'setHouseNote', stepId: s.step.id, text })}
-            />
+            >
+              {s.step.asks && (
+                <FlagToggles
+                  inline
+                  flags={shownFlags(s.step.asks, flagDefs, state, s.charId)}
+                  value={flagLookup(flagDefs, state, s.charId)}
+                  onChange={setFlag(s.charId)}
+                />
+              )}
+            </StepRow>
           ))}
         </ul>
       </div>

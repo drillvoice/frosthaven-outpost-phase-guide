@@ -25,6 +25,8 @@ export interface FlagDef {
   default?: boolean;
   /** Only show this toggle when the condition holds (e.g. a follow-up question). */
   showWhen?: Condition;
+  /** Show as a two-way choice instead of an on/off switch: [label when off, label when on]. */
+  choices?: [string, string];
 }
 
 export interface StepDef {
@@ -41,6 +43,8 @@ export interface StepDef {
   perCharacter?: boolean;
   /** Sub-heading within the phase; consecutive steps with the same group share it. */
   group?: string;
+  /** Toggles shown directly under this step, for questions the step raises. */
+  asks?: string[];
 }
 
 export interface PhaseDef {
@@ -48,7 +52,7 @@ export interface PhaseDef {
   title: string;
   /** Rulebook page(s) for the phase. */
   pages: string;
-  /** Toggles shown in this phase. Character-scoped ones appear per character. */
+  /** Toggles shown at the top of the phase (things you know before starting it). */
   flags: string[];
   steps: StepDef[];
 }

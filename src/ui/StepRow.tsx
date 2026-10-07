@@ -1,3 +1,4 @@
+import type { ComponentChildren } from 'preact';
 import { useState } from 'preact/hooks';
 import type { StepInstance } from '../logic/checklist';
 import { buzz } from './util';
@@ -8,9 +9,11 @@ interface Props {
   note: string;
   onToggle: () => void;
   onNote: (text: string) => void;
+  /** Inline toggles for questions this step raises. */
+  children?: ComponentChildren;
 }
 
-export function StepRow({ instance, checked, note, onToggle, onNote }: Props) {
+export function StepRow({ instance, checked, note, onToggle, onNote, children }: Props) {
   const { step } = instance;
   const [open, setOpen] = useState(false);
   const detailsId = `d-${instance.key}`;
@@ -43,6 +46,7 @@ export function StepRow({ instance, checked, note, onToggle, onNote }: Props) {
           i
         </button>
       </div>
+      {children}
       {open && (
         <div class="step-details" id={detailsId}>
           <p class="reminder">{step.reminder}</p>

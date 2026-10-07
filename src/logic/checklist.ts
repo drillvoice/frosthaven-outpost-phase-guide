@@ -89,14 +89,17 @@ export function isOutpostPhaseComplete(phases: PhaseDef[], flagDefs: FlagDef[], 
   return activePhaseId(phases, flagDefs, state) === null;
 }
 
-/** Toggles to show for a phase, split by scope, filtered by their showWhen. */
-export function visibleFlags(phase: PhaseDef, flagDefs: FlagDef[], state: AppState, charId?: string): FlagDef[] {
+/** Resolves toggle ids to definitions, keeping those whose showWhen holds. */
+export function shownFlags(ids: string[], flagDefs: FlagDef[], state: AppState, charId?: string): FlagDef[] {
   const get = flagLookup(flagDefs, state, charId);
-  return phase.flags
+  return ids
     .map((id) => flagDefs.find((f) => f.id === id))
-    .filter((f): f is FlagDef => !!f)
-    .filter((f) => (charId ? f.scope === 'character' : f.scope !== 'character'))
-    .filter((f) => evalCondition(f.showWhen, get));
+    .filter((f): f is FlagDef => !!f && evalCondition(f.showWhen, get));
+}
+
+/** Toggles at the top of a phase. Character-scoped ones only appear inside a character block. */
+export function visibleFlags(phase: PhaseDef, flagDefs: FlagDef[], state: AppState, charId?: string): FlagDef[] {
+  return shownFlags(phase.flags, flagDefs, state, charId).filter((f) => (charId ? f.scope === 'character' : f.scope !== 'character'));
 }
 
 /** Groups consecutive steps sharing a `group` so the UI can render sub-headings. */

@@ -5,9 +5,10 @@ Frosthaven Outpost Phase at the table (rulebook pp. 59–68).
 
 - Five phases as collapsible sections; the first unfinished one is "active"
   and opens automatically. Tap any heading to open or close it.
-- Toggles at the top of each phase show or hide conditional steps
-  (attack drawn, winter, retiring, …). Toggles marked **kept** carry over to
-  the next Outpost Phase; the rest reset.
+- Toggles sit directly under the step that raises the question (e.g. "Check
+  the back for an attack" → *attack?*) and show or hide the steps that
+  follow. Season is a Summer | Winter selector. Toggles marked **kept**
+  carry over to the next Outpost Phase; the rest reset.
 - Downtime repeats for each party member, with their own toggles.
 - Tap ⓘ on a step for a short reminder and a **house notes** box. Notes are
   kept across phases (a dot on ⓘ means a note exists).
@@ -30,11 +31,14 @@ All steps, reminders and toggles live in
 | `optional`     | shows an "optional" badge                                        |
 | `perCharacter` | repeat for every party member                                    |
 | `group`        | sub-heading (e.g. "Attack")                                      |
+| `asks`         | toggle ids shown inline under this step                          |
 
 Toggles are defined in `flags` at the top of the same file, with a `scope`
 of `phase` (resets each Outpost Phase), `character` (per character, resets)
-or `campaign` (kept). List a toggle in a phase's `flags` array to show it
-there. Run `npm test` after editing: it catches unknown flag names,
+or `campaign` (kept). Show a toggle under the step that raises it with
+`asks`, or at the top of a phase via the phase's `flags` array (for things
+known before the phase starts). Give a toggle `choices: ['Summer', 'Winter']`
+to show a two-way selector instead of a switch. Run `npm test` after editing: it catches unknown flag names,
 duplicate ids, and phases that could end up with no visible steps.
 
 ## Development

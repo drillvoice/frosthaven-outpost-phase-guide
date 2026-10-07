@@ -17,7 +17,7 @@ describe('outpost-phase data', () => {
   it('only references flags that exist', () => {
     for (const p of phases) {
       for (const id of p.flags) expect(flagIds, `phase ${p.id}`).toContain(id);
-      for (const s of p.steps) for (const id of condFlags(s.when)) expect(flagIds, `step ${s.id}`).toContain(id);
+      for (const s of p.steps) for (const id of [...condFlags(s.when), ...(s.asks ?? [])]) expect(flagIds, `step ${s.id}`).toContain(id);
     }
     for (const f of flags) for (const id of condFlags(f.showWhen)) expect(flagIds, `flag ${f.id}`).toContain(id);
   });
@@ -25,13 +25,18 @@ describe('outpost-phase data', () => {
   it('uses character flags only on per-character steps', () => {
     const charFlags = new Set(flags.filter((f) => f.scope === 'character').map((f) => f.id));
     for (const s of phases.flatMap((p) => p.steps)) {
-      if (!s.perCharacter) for (const id of condFlags(s.when)) expect(charFlags.has(id), `step ${s.id}`).toBe(false);
+      if (!s.perCharacter) for (const id of [...condFlags(s.when), ...(s.asks ?? [])]) expect(charFlags.has(id), `step ${s.id}`).toBe(false);
     }
+  });
+
+  it('shows every toggle somewhere', () => {
+    const shown = new Set(phases.flatMap((p) => [...p.flags, ...p.steps.flatMap((s) => s.asks ?? [])]));
+    for (const f of flags) expect(shown.has(f.id), f.id).toBe(true);
   });
 
   it('never leaves a phase with zero visible steps, whatever its toggles', () => {
     for (const p of phases) {
-      const ids = [...new Set([...p.flags, ...p.steps.flatMap((s) => condFlags(s.when))])];
+      const ids = [...new Set([...p.flags, ...p.steps.flatMap((s) => [...condFlags(s.when), ...(s.asks ?? [])])])];
       for (let mask = 0; mask < 1 << ids.length; mask++) {
         const get = (id: string) => (mask & (1 << ids.indexOf(id))) !== 0;
         const visible = p.steps.filter((s) => evalCondition(s.when, get));
