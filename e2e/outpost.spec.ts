@@ -31,7 +31,7 @@ test('walks a full Outpost Phase and starts the next one', async ({ page }) => {
   await expectActive(page, 'Passage of Time');
   await expect(phase(page, 'time').locator('.phase-count')).toHaveText('0/2');
 
-  await page.getByRole('button', { name: 'Log & settings' }).click();
+  await page.getByRole('button', { name: 'Log', exact: true }).click();
   await expect(page.locator('.log-row')).toHaveCount(1);
   await expect(page.locator('.log-row')).toContainText('Won scenario 5');
   await expect(page.locator('.log-row .pill')).toHaveCount(0); // logged as complete

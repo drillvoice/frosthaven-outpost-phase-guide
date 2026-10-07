@@ -1,0 +1,99 @@
+{
+  "schemaVersion": 2,
+  "party": {
+    "c1": {
+      "name": "Ann",
+      "className": "Drifter",
+      "order": 0
+    },
+    "c2": {
+      "name": "Bo",
+      "className": "Blinkblade",
+      "order": 1
+    }
+  },
+  "campaignFlags": {
+    "winter": true,
+    "building37": false
+  },
+  "houseNotes": {
+    "ops.resolve": "Remember the Garden bonus"
+  },
+  "log": {
+    "l1": {
+      "startedAt": "2026-10-01T18:00:00.000Z",
+      "endedAt": "2026-10-01T19:30:00.000Z",
+      "complete": true,
+      "note": "Won scenario 5",
+      "week": 9
+    }
+  },
+  "current": {
+    "startedAt": "2026-10-07T18:00:00.000Z",
+    "phaseFlags": {
+      "attack": true
+    },
+    "charFlags": {
+      "c2": {
+        "retiring": true
+      }
+    },
+    "checked": {
+      "time.mark": true,
+      "time.season": true,
+      "event.drawWinter": true
+    }
+  },
+  "calendar": {
+    "marked": {
+      "1": {
+        "at": "2026-09-01T18:00:00.000Z"
+      },
+      "2": {
+        "at": "2026-09-01T18:00:00.000Z"
+      },
+      "3": {
+        "at": "2026-09-01T18:00:00.000Z"
+      },
+      "4": {
+        "at": "2026-09-01T18:00:00.000Z"
+      },
+      "5": {
+        "at": "2026-09-01T18:00:00.000Z"
+      },
+      "6": {
+        "at": "2026-09-01T18:00:00.000Z"
+      },
+      "7": {
+        "at": "2026-09-01T18:00:00.000Z"
+      },
+      "8": {
+        "at": "2026-09-01T18:00:00.000Z"
+      },
+      "9": {
+        "at": "2026-09-01T18:00:00.000Z"
+      }
+    },
+    "entries": {
+      "e1": {
+        "week": 12,
+        "kind": "section",
+        "text": "32.3",
+        "createdAt": "2026-09-20T18:00:00.000Z"
+      },
+      "e2": {
+        "week": 10,
+        "kind": "note",
+        "text": "Check Bo's quest",
+        "createdAt": "2026-09-21T18:00:00.000Z"
+      },
+      "e3": {
+        "week": 10,
+        "kind": "section",
+        "text": "118.2",
+        "carried": true,
+        "createdAt": "2026-09-22T18:00:00.000Z"
+      }
+    }
+  }
+}

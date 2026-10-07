@@ -30,7 +30,7 @@ export function LogView({ state, dispatch, group, theme, onTheme }: Props) {
     if (!file) return;
     try {
       const data = JSON.parse(await file.text());
-      if (data?.schemaVersion !== 1) throw new Error('Not a backup from this app');
+      if (![1, 2].includes(data?.schemaVersion)) throw new Error('Not a backup from this app');
       if (confirm('Replace everything in this group with the backup?')) {
         dispatch({ type: 'replaceState', state: migrate(data, new Date().toISOString()) });
       }

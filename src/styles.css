@@ -110,7 +110,7 @@ main {
   inset: auto 0 0 0;
   z-index: 5;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   padding-bottom: env(safe-area-inset-bottom);
   background: var(--surface);
   border-top: 1px solid var(--border);
@@ -635,6 +635,10 @@ input:focus {
   margin: 0 0 8px;
 }
 
+.dialog-title:focus {
+  outline: none;
+}
+
 .dialog p {
   margin: 0 0 14px;
   color: var(--muted);
@@ -729,4 +733,202 @@ input:focus {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 8px;
+}
+
+/* Calendar ---------------------------------------------------------------- */
+
+.cal-summary {
+  margin: 0 4px 12px;
+  color: var(--muted);
+}
+
+.cal-summary strong {
+  color: var(--text);
+}
+
+.cal-h {
+  margin: 20px 4px 10px;
+  font-size: 17px;
+}
+
+.add-entry {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.add-entry h3 {
+  font-size: 16px;
+}
+
+.add-entry .segmented {
+  display: flex;
+}
+
+.add-entry .segmented button {
+  flex: 1;
+}
+
+.dialog .add-entry {
+  margin-top: 12px;
+  padding: 10px 0 0;
+  border: 0;
+  border-top: 1px dashed var(--border);
+  border-radius: 0;
+  background: none;
+}
+
+.stepper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.stepper input {
+  width: 5.5em;
+  min-height: 48px;
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg);
+  font-size: 18px;
+  text-align: center;
+}
+
+.cal-grid {
+  display: grid;
+  gap: 6px;
+  margin-top: 16px;
+  padding: 10px 8px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.cal-row {
+  display: grid;
+  grid-template-columns: 34px repeat(10, 1fr);
+  gap: 3px;
+  align-items: center;
+}
+
+.cal-row-label {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.1;
+}
+
+.cal-row-label small {
+  display: block;
+  font-weight: 400;
+}
+
+.cal-box {
+  position: relative;
+  aspect-ratio: 1;
+  min-height: 30px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.is-winter .cal-box {
+  background: color-mix(in srgb, var(--accent) 10%, var(--bg));
+}
+
+.is-summer .cal-box {
+  background: color-mix(in srgb, var(--warn) 8%, var(--bg));
+}
+
+.cal-box.is-marked {
+  color: var(--text);
+}
+
+.cal-box.is-next {
+  border: 2px solid var(--accent);
+  color: var(--accent);
+}
+
+.cal-num {
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.cal-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  min-width: 17px;
+  height: 17px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: var(--warn);
+  color: var(--accent-ink);
+  font-size: 11px;
+  line-height: 17px;
+}
+
+.entry-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.entry-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 56px;
+  margin-bottom: 8px;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  text-align: left;
+  cursor: pointer;
+}
+
+.entry-week {
+  flex: none;
+  width: 76px;
+  font-weight: 650;
+}
+
+.entry-week small {
+  display: block;
+  color: var(--muted);
+  font-weight: 400;
+}
+
+.entry-text {
+  flex: 1;
+}
+
+.entry-edit {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.entry-kind {
+  flex: none;
+  width: 58px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.entry-edit input {
+  flex: 1;
+  min-width: 0;
 }
