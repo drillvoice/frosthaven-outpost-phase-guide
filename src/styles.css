@@ -125,19 +125,25 @@ main {
   inset: auto 0 0 0;
   z-index: 5;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   padding-bottom: env(safe-area-inset-bottom);
   background: var(--surface);
   border-top: 1px solid var(--border);
 }
 
 .tabs button {
+  min-width: 0;
   min-height: 60px;
+  padding: 0 2px;
   border: 0;
   background: none;
   color: var(--muted);
-  font-size: 15px;
+  /* Shrinks on narrow phones / large text settings so four tabs always fit. */
+  font-size: min(15px, 3.9vw);
   font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .tabs button.is-current {
@@ -816,6 +822,7 @@ input:focus {
 .cal-grid {
   display: grid;
   gap: 6px;
+  min-width: 0;
   margin-top: 16px;
   padding: 10px 8px;
   background: var(--surface);
@@ -825,27 +832,26 @@ input:focus {
 
 .cal-row {
   display: grid;
-  grid-template-columns: 34px repeat(10, 1fr);
-  gap: 3px;
-  align-items: center;
+  /* minmax(0, 1fr) lets the ten boxes shrink to fit narrow phones. */
+  grid-template-columns: repeat(10, minmax(0, 1fr));
+  gap: 4px;
+}
+
+.cal-row + .cal-row {
+  margin-top: 4px;
 }
 
 .cal-row-label {
+  grid-column: 1 / -1;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
-  line-height: 1.1;
-}
-
-.cal-row-label small {
-  display: block;
-  font-weight: 400;
 }
 
 .cal-box {
   position: relative;
+  min-width: 0;
   aspect-ratio: 1;
-  min-height: 30px;
   padding: 0;
   border: 1px solid var(--border);
   border-radius: 6px;
