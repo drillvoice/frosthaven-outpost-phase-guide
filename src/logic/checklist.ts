@@ -2,12 +2,15 @@
 // step definitions plus saved state and derives what to show.
 import type { Condition, FlagDef, PhaseDef, StepDef } from '../data/types';
 import type { AppState, Character } from '../state/types';
+import { entriesForWeek, seasonAfter, weekChangesSeason, weeksMarked } from './calendar';
 
 export interface StepInstance {
   /** Key into state.current.checked. */
   key: string;
   step: StepDef;
   charId?: string;
+  /** Generated from a calendar entry rather than the step data. */
+  calendarEntryId?: string;
 }
 
 export type FlagLookup = (flagId: string) => boolean;
@@ -25,10 +28,24 @@ export function sortedParty(state: AppState): [string, Character][] {
   return Object.entries(state.party).sort(([, a], [, b]) => a.order - b.order);
 }
 
+/** Flag values worked out from tracked state. These override anything stored. */
+export function derivedFlags(state: AppState): Record<string, boolean> {
+  const cal = state.calendar;
+  if (!cal) return { calendarOn: false, seasonChanged: false };
+  const week = state.current.markedWeek;
+  return {
+    calendarOn: true,
+    winter: seasonAfter(weeksMarked(cal)) === 'winter',
+    seasonChanged: week !== undefined && !!cal.marked[week] && weekChangesSeason(week),
+  };
+}
+
 /** Builds a flag reader. With a charId, character-scoped flags read that character's values. */
 export function flagLookup(flagDefs: FlagDef[], state: AppState, charId?: string): FlagLookup {
   const byId = new Map(flagDefs.map((f) => [f.id, f]));
+  const derived = derivedFlags(state);
   return (id) => {
+    if (id in derived) return derived[id];
     const def = byId.get(id);
     const fallback = def?.default ?? false;
     switch (def?.scope) {
@@ -38,6 +55,8 @@ export function flagLookup(flagDefs: FlagDef[], state: AppState, charId?: string
         return charId ? (state.current.charFlags[charId]?.[id] ?? fallback) : false;
       case 'phase':
         return state.current.phaseFlags[id] ?? fallback;
+      case 'derived':
+        return fallback;
       default:
         return false; // unknown flag id: treat as off
     }
@@ -50,7 +69,10 @@ export function visibleSteps(phase: PhaseDef, flagDefs: FlagDef[], state: AppSta
   const out: StepInstance[] = [];
   for (const step of phase.steps) {
     if (!step.perCharacter) {
-      if (evalCondition(step.when, shared)) out.push({ key: stepKey(step.id), step });
+      if (evalCondition(step.when, shared)) {
+        out.push({ key: stepKey(step.id), step });
+        if (step.calendar === 'markWeek') out.push(...calendarSectionSteps(state));
+      }
       continue;
     }
     for (const [charId] of party) {
@@ -60,6 +82,23 @@ export function visibleSteps(phase: PhaseDef, flagDefs: FlagDef[], state: AppSta
     }
   }
   return out;
+}
+
+/** Sections written in the week marked this phase, as steps to tick off. */
+export function calendarSectionSteps(state: AppState): StepInstance[] {
+  const week = state.current.markedWeek;
+  if (!state.calendar || week === undefined) return [];
+  return entriesForWeek(state.calendar, week)
+    .filter((e) => e.kind === 'section')
+    .map((e) => ({
+      key: `cal:${e.id}`,
+      calendarEntryId: e.id,
+      step: {
+        id: `cal:${e.id}`,
+        title: `Read section ${e.text}`,
+        reminder: `Written in week ${week} of the calendar${e.carried ? ' (carried over from an earlier week)' : ''}. Read it from the section book.`,
+      },
+    }));
 }
 
 export function hasPerCharacterSteps(phase: PhaseDef): boolean {

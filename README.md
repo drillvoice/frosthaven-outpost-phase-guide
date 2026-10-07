@@ -14,6 +14,12 @@ Frosthaven Outpost Phase at the table (rulebook pp. 59–68).
   kept across phases (a dot on ⓘ means a note exists).
 - **Start new Outpost Phase** logs the current one (date, optional note) and
   clears ticks. Party, notes and kept toggles stay.
+- **Calendar** tab: set it up once with the weeks already marked on your
+  campaign sheet. Add section numbers or notes to future weeks ("in 3
+  weeks" or by week number), and mark weeks when time passes outside the
+  Outpost Phase (entries carry forward, p. 59). Once set up, ticking "Mark
+  the next calendar box" marks the week, that week's sections appear as
+  steps to tick, and the season (and event deck) follows the calendar.
 - Everything is saved on the device automatically. *Log & settings* has
   backup export/import and light/dark mode.
 
@@ -32,10 +38,12 @@ All steps, reminders and toggles live in
 | `perCharacter` | repeat for every party member                                    |
 | `group`        | sub-heading (e.g. "Attack")                                      |
 | `asks`         | toggle ids shown inline under this step                          |
+| `calendar`     | `'markWeek'`: ticking marks the next calendar week               |
 
 Toggles are defined in `flags` at the top of the same file, with a `scope`
 of `phase` (resets each Outpost Phase), `character` (per character, resets)
-or `campaign` (kept). Show a toggle under the step that raises it with
+`campaign` (kept), or `derived` (worked out from tracked state such as the
+calendar; never toggled by hand). Show a toggle under the step that raises it with
 `asks`, or at the top of a phase via the phase's `flags` array (for things
 known before the phase starts). Give a toggle `choices: ['Summer', 'Winter']`
 to show a two-way selector instead of a switch. Run `npm test` after editing: it catches unknown flag names,

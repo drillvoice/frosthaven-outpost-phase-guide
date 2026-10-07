@@ -12,7 +12,11 @@ import type { FlagDef, PhaseDef } from './types';
 // ---------------------------------------------------------------------------
 
 export const flags: FlagDef[] = [
-  // Passage of Time
+  // Calendar (worked out from the Calendar tab once it's set up)
+  { id: 'calendarOn', scope: 'derived', label: 'The calendar is being tracked in the app' },
+  { id: 'seasonChanged', scope: 'derived', label: 'The week marked this phase completed a set of 10' },
+
+  // Passage of Time. With the calendar tracked, `winter` follows the calendar.
   { id: 'winter', scope: 'campaign', label: 'Season', choices: ['Summer', 'Winter'] },
 
   // Outpost Event
@@ -45,12 +49,26 @@ export const phases: PhaseDef[] = [
       {
         id: 'time.mark',
         title: 'Mark the next calendar box and read any sections in it',
+        calendar: 'markWeek',
         reminder:
           'Cross off the next empty box on the campaign sheet calendar (one box = one week). If it holds section numbers, read each one from the section book, one at a time, in any order.',
       },
       {
+        id: 'time.toWinter',
+        title: 'Season changes to winter',
+        when: { all: ['seasonChanged', 'winter'] },
+        reminder: 'That box completed a set of 10. Use the winter outpost and road event decks from now on; the app has switched over.',
+      },
+      {
+        id: 'time.toSummer',
+        title: 'Season changes to summer',
+        when: { all: ['seasonChanged'], none: ['winter'] },
+        reminder: 'That box completed a set of 10. Use the summer outpost and road event decks from now on; the app has switched over.',
+      },
+      {
         id: 'time.season',
         title: 'Check the season',
+        when: { none: ['calendarOn'] },
         asks: ['winter'],
         reminder:
           'If the box you marked completed a set of 10, the season flips. Set the selector to match the calendar: it decides which outpost event deck you draw from.',

@@ -8,7 +8,8 @@ interface Props {
   checked: boolean;
   note: string;
   onToggle: () => void;
-  onNote: (text: string) => void;
+  /** Omitted for steps that don't take house notes (e.g. calendar sections). */
+  onNote?: (text: string) => void;
   /** Inline toggles for questions this step raises. */
   children?: ComponentChildren;
 }
@@ -50,15 +51,17 @@ export function StepRow({ instance, checked, note, onToggle, onNote, children }:
       {open && (
         <div class="step-details" id={detailsId}>
           <p class="reminder">{step.reminder}</p>
-          <label class="note">
-            <span>House notes</span>
-            <textarea
-              rows={2}
-              placeholder="Our own reminder for this step…"
-              value={note}
-              onInput={(e) => onNote(e.currentTarget.value)}
-            />
-          </label>
+          {onNote && (
+            <label class="note">
+              <span>House notes</span>
+              <textarea
+                rows={2}
+                placeholder="Our own reminder for this step…"
+                value={note}
+                onInput={(e) => onNote(e.currentTarget.value)}
+              />
+            </label>
+          )}
         </div>
       )}
     </li>

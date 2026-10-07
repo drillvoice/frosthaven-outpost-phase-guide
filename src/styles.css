@@ -87,8 +87,23 @@ h4 {
   letter-spacing: 0.02em;
 }
 
+.chips {
+  display: flex;
+  gap: 6px;
+  min-width: 0;
+}
+
+.week-chip {
+  border: 0;
+  color: var(--accent);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
 .group-chip {
-  max-width: 45%;
+  max-width: 45vw;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -931,4 +946,23 @@ input:focus {
 .entry-edit input {
   flex: 1;
   min-width: 0;
+}
+
+.step-aside {
+  margin: -6px 6px 8px 50px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.step-aside p {
+  margin: 0 0 4px;
+}
+
+.cal-note {
+  color: var(--text);
+}
+
+.log-week {
+  color: var(--muted);
+  font-weight: 400;
 }

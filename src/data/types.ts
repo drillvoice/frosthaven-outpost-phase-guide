@@ -7,8 +7,9 @@
  * - phase:     resets when a new Outpost Phase starts
  * - character: one value per character, resets each Outpost Phase
  * - campaign:  persists across Outpost Phases until you change it
+ * - derived:   computed from tracked state (e.g. the calendar); never toggled by hand
  */
-export type FlagScope = 'phase' | 'character' | 'campaign';
+export type FlagScope = 'phase' | 'character' | 'campaign' | 'derived';
 
 export interface Condition {
   /** Every listed flag must be on. */
@@ -45,6 +46,12 @@ export interface StepDef {
   group?: string;
   /** Toggles shown directly under this step, for questions the step raises. */
   asks?: string[];
+  /**
+   * Ties the step to the calendar. 'markWeek': ticking it marks the next
+   * calendar week (unticking undoes it), and that week's sections appear
+   * beneath it as steps to tick.
+   */
+  calendar?: 'markWeek';
 }
 
 export interface PhaseDef {

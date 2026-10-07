@@ -4,7 +4,8 @@ import { TOTAL_WEEKS, clampWeek, weeksMarked } from '../logic/calendar';
 import type { AppState, Calendar, CalendarEntry, Character, CurrentPhase } from './types';
 
 export type Action =
-  | { type: 'toggleStep'; key: string }
+  /** markWeek: the step is tied to the calendar, so ticking marks the next week and unticking undoes it. */
+  | { type: 'toggleStep'; key: string; markWeek?: { now: string } }
   | { type: 'setPhaseFlag'; flagId: string; value: boolean }
   | { type: 'setCharFlag'; charId: string; flagId: string; value: boolean }
   | { type: 'setCampaignFlag'; flagId: string; value: boolean }
@@ -37,6 +38,25 @@ function omit<T>(rec: Record<string, T>, key: string): Record<string, T> {
   return rest;
 }
 
+/** Marks (or un-marks) this Outpost Phase's calendar week alongside the Passage of Time tick. */
+function markWeekForPhase(state: AppState, ticking: boolean, now: string): AppState {
+  const cal = state.calendar;
+  const cur = state.current;
+  if (!cal) return state;
+  if (ticking) {
+    if (cur.markedWeek !== undefined) return state;
+    const week = weeksMarked(cal) + 1;
+    if (week > TOTAL_WEEKS) return state;
+    return { ...state, calendar: { ...cal, marked: { ...cal.marked, [week]: { at: now } } }, current: { ...cur, markedWeek: week } };
+  }
+  const week = cur.markedWeek;
+  if (week === undefined) return state;
+  const { markedWeek: _dropped, ...rest } = cur;
+  // Only undo the mark if nothing has been marked after it since.
+  const marked = week === weeksMarked(cal) ? omit(cal.marked, String(week)) : cal.marked;
+  return { ...state, calendar: { ...cal, marked }, current: rest };
+}
+
 const emptyCalendar = (): Calendar => ({ marked: {}, entries: {} });
 
 function withCalendar(state: AppState, update: (cal: Calendar) => Calendar): AppState {
@@ -47,8 +67,10 @@ export function reduce(state: AppState, action: Action): AppState {
   const cur = state.current;
   switch (action.type) {
     case 'toggleStep': {
-      const checked = cur.checked[action.key] ? omit(cur.checked, action.key) : { ...cur.checked, [action.key]: true as const };
-      return { ...state, current: { ...cur, checked } };
+      const ticking = !cur.checked[action.key];
+      const checked = ticking ? { ...cur.checked, [action.key]: true as const } : omit(cur.checked, action.key);
+      const next = { ...state, current: { ...cur, checked } };
+      return action.markWeek ? markWeekForPhase(next, ticking, action.markWeek.now) : next;
     }
     case 'setPhaseFlag':
       return { ...state, current: { ...cur, phaseFlags: { ...cur.phaseFlags, [action.flagId]: action.value } } };
@@ -97,6 +119,7 @@ export function reduce(state: AppState, action: Action): AppState {
         endedAt: action.now,
         complete: action.complete,
         ...(action.note?.trim() ? { note: action.note.trim() } : {}),
+        ...(cur.markedWeek !== undefined ? { week: cur.markedWeek } : {}),
       };
       // Party, campaign flags and house notes carry over; ticks and per-phase toggles reset.
       return { ...state, log: { ...state.log, [action.logId]: entry }, current: emptyPhase(action.now) };

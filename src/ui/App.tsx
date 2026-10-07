@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'preact/hooks';
+import { seasonAfter, weeksMarked } from '../logic/calendar';
 import { createStore, type Store } from '../state/store';
 import { localStorageAdapter } from '../state/storage';
 import { DEFAULT_GROUP, groupFromHash, hashForGroup } from '../route';
@@ -79,8 +80,15 @@ function App({ store, group }: { store: Store; group: string }) {
     <>
       <header class="top">
         <h1>Outpost Phase</h1>
-        <span class="group-chip" title="Group">
-          {group}
+        <span class="chips">
+          {state.calendar && (
+            <button type="button" class="group-chip week-chip" onClick={() => go('calendar')}>
+              Week {weeksMarked(state.calendar)} · {seasonAfter(weeksMarked(state.calendar)) === 'winter' ? 'Winter' : 'Summer'}
+            </button>
+          )}
+          <span class="group-chip" title="Group">
+            {group}
+          </span>
         </span>
       </header>
       <main>
