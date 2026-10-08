@@ -205,7 +205,7 @@ function CalendarGrid({ cal, marked, onOpen }: { cal: Calendar; marked: number; 
         return (
           <div class={`cal-row is-${season}`} role="row" key={r}>
             <span class="cal-row-label">
-              {season === 'summer' ? 'Sum' : 'Win'} <small>Y{Math.floor(r / 2) + 1}</small>
+              {cap(season)} · Year {Math.floor(r / 2) + 1}
             </span>
             {Array.from({ length: 10 }, (_, i) => {
               const w = first + i;

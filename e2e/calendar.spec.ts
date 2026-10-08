@@ -127,3 +127,36 @@ test('the next Outpost Phase marks week 10, shows its sections and switches to w
   await page.getByRole('button', { name: 'Log', exact: true }).click();
   await expect(page.locator('.log-row')).toContainText('Week 10');
 });
+
+test.describe('on a narrow phone with large text', () => {
+  test.use({ viewport: { width: 320, height: 700 } });
+
+  test('the calendar grid and tab bar fit without clipping', async ({ page }) => {
+    await page.goto('./');
+    // Approximates an enlarged system text size, with a wide font so the result doesn't depend on the machine's default font.
+    await page.addStyleTag({ content: "html { -webkit-text-size-adjust: 130% !important; } body { font-family: 'DejaVu Sans', 'Verdana', sans-serif !important; }" });
+    await page.getByRole('button', { name: 'Calendar', exact: true }).click();
+    await setUp(page, 9);
+
+    const fit = await page.evaluate(() => {
+      const grid = document.querySelector('.cal-grid')!.getBoundingClientRect();
+      const boxes = [...document.querySelectorAll('.cal-box')].map((b) => b.getBoundingClientRect());
+      // A tab is clipped if its label is wider than the button or gets cut off with an ellipsis.
+      const clippedTabs = [...document.querySelectorAll('.tabs button')]
+        .filter((b) => {
+          const range = document.createRange();
+          range.selectNodeContents(b);
+          const text = range.getBoundingClientRect();
+          const box = b.getBoundingClientRect();
+          return b.scrollWidth > b.clientWidth || text.left < box.left || text.right > box.right;
+        })
+        .map((b) => b.textContent);
+      return {
+        boxesInside: boxes.every((b) => b.left >= grid.left && b.right <= grid.right),
+        pageScrollsSideways: document.documentElement.scrollWidth > window.innerWidth,
+        clippedTabs,
+      };
+    });
+    expect(fit).toEqual({ boxesInside: true, pageScrollsSideways: false, clippedTabs: [] });
+  });
+});

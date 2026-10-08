@@ -1,13 +1,13 @@
 import { expect, type Page } from '@playwright/test';
 
 export async function addParty(page: Page, members: [name: string, className: string][]) {
-  await page.getByRole('button', { name: 'Party' }).click();
+  await page.getByRole('button', { name: 'Party', exact: true }).click();
   for (const [name, className] of members) {
     await page.getByLabel('New character name').fill(name);
     await page.getByLabel('New character class').fill(className);
     await page.getByRole('button', { name: 'Add to party' }).click();
   }
-  await page.getByRole('button', { name: 'Checklist' }).click();
+  await page.getByRole('button', { name: 'Checklist', exact: true }).click();
 }
 
 export const phase = (page: Page, id: string) => page.locator(`#phase-${id}`);
