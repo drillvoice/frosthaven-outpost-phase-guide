@@ -9,7 +9,11 @@ Frosthaven Outpost Phase at the table (rulebook pp. 59–68).
   the back for an attack" → *attack?*) and show or hide the steps that
   follow. Season is a Summer | Winter selector. Toggles marked **kept**
   carry over to the next Outpost Phase; the rest reset.
-- Downtime repeats for each party member, with their own toggles.
+- Downtime is one shared list for the whole party; each player handles
+  their own character and the group ticks a step once everyone is done.
+- **Party** tab: each character's level, with the party's total, average,
+  half average and scenario level (half the average, rounded up) for each
+  difficulty, plus how many more levels until the scenario level rises.
 - Tap ⓘ on a step for a short reminder and a **house notes** box. Notes are
   kept across phases (a dot on ⓘ means a note exists).
 - **Start new Outpost Phase** logs the current one (date, optional note) and
@@ -35,13 +39,12 @@ All steps, reminders and toggles live in
 | `reminder`     | 1–2 lines; refer to page/card numbers, never copy card text      |
 | `when`         | `{ all: [...flags on], none: [...flags off] }`; hidden otherwise |
 | `optional`     | shows an "optional" badge                                        |
-| `perCharacter` | repeat for every party member                                    |
 | `group`        | sub-heading (e.g. "Attack")                                      |
 | `asks`         | toggle ids shown inline under this step                          |
 | `calendar`     | `'markWeek'`: ticking marks the next calendar week               |
 
 Toggles are defined in `flags` at the top of the same file, with a `scope`
-of `phase` (resets each Outpost Phase), `character` (per character, resets),
+of `phase` (resets each Outpost Phase),
 `campaign` (kept), or `derived` (worked out from tracked state such as the
 calendar; never toggled by hand). Show a toggle under the step that raises it with
 `asks`, or at the top of a phase via the phase's `flags` array (for things

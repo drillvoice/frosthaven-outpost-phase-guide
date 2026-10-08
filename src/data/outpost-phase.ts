@@ -24,13 +24,13 @@ export const flags: FlagDef[] = [
   { id: 'attack', scope: 'phase', label: 'The event card has an attack on its back', showWhen: { none: ['skipEvent'] } },
   { id: 'barracksWrecked', scope: 'campaign', label: 'The Barracks is wrecked', showWhen: { all: ['attack'], none: ['skipEvent'] } },
 
-  // Downtime (per character unless noted)
-  { id: 'levelUpDue', scope: 'character', label: 'XP has reached the next level' },
-  { id: 'belowHalfProsperity', scope: 'character', label: 'Level is below half prosperity (rounded up)' },
-  { id: 'retiring', scope: 'character', label: 'Personal quest is complete (must retire)' },
-  { id: 'firstClassRetirement', scope: 'character', label: 'First character of this class to retire', showWhen: { all: ['retiring'] } },
-  { id: 'newCharacter', scope: 'character', label: 'Player is starting a new character' },
-  { id: 'building37', scope: 'campaign', label: 'Building 37 has been built (party-wide)' },
+  // Downtime. One list for the whole party; each player handles their own character.
+  { id: 'levelUpDue', scope: 'phase', label: 'Someone\'s XP has reached the next level' },
+  { id: 'belowHalfProsperity', scope: 'phase', label: 'Someone\'s level is below half prosperity (rounded up)' },
+  { id: 'retiring', scope: 'phase', label: 'Someone\'s personal quest is complete (must retire)' },
+  { id: 'firstClassRetirement', scope: 'phase', label: 'They\'re the first of their class to retire', showWhen: { all: ['retiring'] } },
+  { id: 'newCharacter', scope: 'phase', label: 'Someone is starting a new character' },
+  { id: 'building37', scope: 'campaign', label: 'Building 37 has been built' },
 
   // Construction
   { id: 'building', scope: 'phase', label: 'We are building or upgrading this week' },
@@ -198,32 +198,28 @@ export const phases: PhaseDef[] = [
     steps: [
       {
         id: 'downtime.review',
-        perCharacter: true,
-        title: 'Check what applies to this character',
+        title: 'Check what applies to anyone in the party',
         asks: ['levelUpDue', 'belowHalfProsperity', 'retiring', 'firstClassRetirement', 'newCharacter'],
         reminder:
-          'Compare XP with the next level, level with half prosperity (rounded up), and check the personal quest. Downtime can be done in any order; this list is just a sensible one.',
+          'Everyone checks their own XP against the next level, level against half prosperity (rounded up), and personal quest. Players do their downtime in any order; tick a step once everyone it applies to is done.',
       },
       {
         id: 'downtime.levelUp',
-        perCharacter: true,
         title: 'Level up (required)',
         when: { all: ['levelUpDue'] },
         reminder:
-          'XP is not spent. Add one ability card of the new level or lower to the pool, raise max HP to the red number on the mat\'s level track, gain a perk mark and choose a perk (p. 63).',
+          'XP is not spent. Add one ability card of the new level or lower to the pool, raise max HP to the red number on the mat\'s level track, gain a perk mark and choose a perk (p. 63). Update their level in the Party tab.',
       },
       {
         id: 'downtime.catchUp',
-        perCharacter: true,
         optional: true,
         title: 'Catch-up level up',
         when: { all: ['belowHalfProsperity'] },
         reminder:
-          'May level up without the XP, repeatedly, up to half prosperity (rounded up). Set XP to the new level\'s minimum. Normal level-up benefits apply.',
+          'May level up without the XP, repeatedly, up to half prosperity (rounded up). Set XP to the new level\'s minimum. Normal level-up benefits apply. Update the Party tab.',
       },
       {
         id: 'downtime.craft',
-        perCharacter: true,
         optional: true,
         title: 'Craft items (Craftsman)',
         reminder:
@@ -231,7 +227,6 @@ export const phases: PhaseDef[] = [
       },
       {
         id: 'downtime.brew',
-        perCharacter: true,
         optional: true,
         title: 'Brew potions (Alchemist)',
         reminder:
@@ -239,7 +234,6 @@ export const phases: PhaseDef[] = [
       },
       {
         id: 'downtime.sell',
-        perCharacter: true,
         optional: true,
         title: 'Sell items',
         reminder:
@@ -247,7 +241,6 @@ export const phases: PhaseDef[] = [
       },
       {
         id: 'downtime.purchase',
-        perCharacter: true,
         optional: true,
         title: 'Purchase items',
         when: { all: ['building37'] },
@@ -255,22 +248,19 @@ export const phases: PhaseDef[] = [
       },
       {
         id: 'downtime.retire',
-        perCharacter: true,
         title: 'Retire (required)',
         when: { all: ['retiring'] },
         reminder:
-          'Do this character\'s other downtime first. Party gains 2 prosperity and unlocks the quest\'s envelope (alternate if taken; random scenario + item blueprint if both are). Optionally spend 15 inspiration for a second quest (p. 64).',
+          'Do the retiring character\'s other downtime first. Party gains 2 prosperity and unlocks the quest\'s envelope (alternate if taken; random scenario + item blueprint if both are). Optionally spend 15 inspiration for a second quest (p. 64).',
       },
       {
         id: 'downtime.retireSection',
-        perCharacter: true,
         title: 'Read the class retirement section',
         when: { all: ['retiring', 'firstClassRetirement'] },
         reminder: 'First retirement of this class: flip the character mat and read the section number near the bottom, after the quest rewards.',
       },
       {
         id: 'downtime.retireCleanup',
-        perCharacter: true,
         title: 'Record and pack away the retired character',
         when: { all: ['retiring'] },
         reminder:
@@ -278,11 +268,10 @@ export const phases: PhaseDef[] = [
       },
       {
         id: 'downtime.create',
-        perCharacter: true,
         title: 'Create the new character',
         when: { all: ['newCharacter'] },
         reminder:
-          'Any class with no active character. Draw 2 personal quests, keep 1. Gold = 10 × prosperity + 20, spent now (leftover lost). Perk marks = this player\'s past retirements. Catch-up level up. Update the party tab (p. 65).',
+          'Any class with no active character. Draw 2 personal quests, keep 1. Gold = 10 × prosperity + 20, spent now (leftover lost). Perk marks = the player\'s past retirements. Catch-up level up. Update the party tab (p. 65).',
       },
     ],
   },
@@ -326,7 +315,7 @@ export const phases: PhaseDef[] = [
         optional: true,
         when: { all: ['building', 'prosperityRose'] },
         reminder:
-          'Anyone whose level is now below half the new prosperity (rounded up) may level up for free, up to that cap. Set XP to the new level\'s minimum.',
+          'Anyone whose level is now below half the new prosperity (rounded up) may level up for free, up to that cap. Set XP to the new level\'s minimum. Update the Party tab.',
       },
       {
         id: 'build.rebuild',

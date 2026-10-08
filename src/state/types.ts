@@ -4,6 +4,8 @@
 export interface Character {
   name: string;
   className: string;
+  /** Character level, 1–9. Absent in saves from before levels were tracked (treat as 1). */
+  level?: number;
   /** Sort position in the party list. */
   order: number;
 }
@@ -39,9 +41,7 @@ export interface Calendar {
 export interface CurrentPhase {
   startedAt: string;
   phaseFlags: Record<string, boolean>;
-  /** charId -> flagId -> value */
-  charFlags: Record<string, Record<string, boolean>>;
-  /** 'stepId', 'stepId@charId', or 'cal:entryId' for calendar sections */
+  /** 'stepId', or 'cal:entryId' for calendar sections */
   checked: Record<string, true>;
   /** The calendar week marked by this Outpost Phase's Passage of Time step. */
   markedWeek?: number;

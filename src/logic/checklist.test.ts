@@ -11,13 +11,6 @@ const tickAll = (s: AppState, phaseId: string) =>
   visibleSteps(phase(phaseId), flags, s).reduce((acc, st) => reduce(acc, { type: 'toggleStep', key: st.key }), s);
 const keys = (s: AppState, phaseId: string) => visibleSteps(phase(phaseId), flags, s).map((x) => x.key);
 
-const withParty = () =>
-  apply(
-    initialState(NOW),
-    { type: 'addCharacter', id: 'a', name: 'Ann', className: 'Drifter' },
-    { type: 'addCharacter', id: 'b', name: 'Bo', className: 'Blinkblade' },
-  );
-
 describe('evalCondition', () => {
   const get = (id: string) => id === 'on';
   it('handles all/none', () => {
@@ -53,35 +46,27 @@ describe('visibility', () => {
     expect(keys(skipped, 'event')).toEqual(['event.skipped']);
   });
 
-  it('repeats downtime steps per character with their own flags', () => {
-    const s = apply(withParty(), { type: 'setCharFlag', charId: 'b', flagId: 'retiring', value: true });
-    const k = keys(s, 'downtime');
-    expect(k).toContain('downtime.craft@a');
-    expect(k).toContain('downtime.craft@b');
-    expect(k).toContain('downtime.retire@b');
-    expect(k).not.toContain('downtime.retire@a');
+  it('shows downtime once for the whole party, driven by shared toggles', () => {
+    const s = initialState(NOW);
+    expect(keys(s, 'downtime')).toEqual(['downtime.review', 'downtime.craft', 'downtime.brew', 'downtime.sell']);
+    const r = apply(s, { type: 'setPhaseFlag', flagId: 'retiring', value: true }, { type: 'setCampaignFlag', flagId: 'building37', value: true });
+    expect(keys(r, 'downtime')).toContain('downtime.retire');
+    expect(keys(r, 'downtime')).toContain('downtime.purchase');
   });
 
-  it('shows campaign flags in per-character steps (building 37)', () => {
-    const s = apply(withParty(), { type: 'setCampaignFlag', flagId: 'building37', value: true });
-    expect(keys(s, 'downtime')).toContain('downtime.purchase@a');
-  });
-
-  it('shows inline toggles per character and respects showWhen', () => {
-    const s = withParty();
+  it('shows inline downtime toggles and respects showWhen', () => {
+    const s = initialState(NOW);
     expect(visibleFlags(phase('downtime'), flags, s).map((f) => f.id)).toEqual(['building37']);
     const asks = phase('downtime').steps.find((st) => st.id === 'downtime.review')!.asks!;
-    const ids = (st: AppState, c: string) => shownFlags(asks, flags, st, c).map((f) => f.id);
-    expect(ids(s, 'a')).not.toContain('firstClassRetirement');
-    const r = apply(s, { type: 'setCharFlag', charId: 'a', flagId: 'retiring', value: true });
-    expect(ids(r, 'a')).toContain('firstClassRetirement');
-    expect(ids(r, 'b')).not.toContain('firstClassRetirement');
+    const ids = (st: AppState) => shownFlags(asks, flags, st).map((f) => f.id);
+    expect(ids(s)).not.toContain('firstClassRetirement');
+    expect(ids(apply(s, { type: 'setPhaseFlag', flagId: 'retiring', value: true }))).toContain('firstClassRetirement');
   });
 });
 
 describe('progress and active phase', () => {
   it('starts on Passage of Time and advances as phases complete', () => {
-    let s = withParty();
+    let s = initialState(NOW);
     expect(activePhaseId(phases, flags, s)).toBe('time');
     s = tickAll(s, 'time');
     expect(activePhaseId(phases, flags, s)).toBe('event');
@@ -94,15 +79,15 @@ describe('progress and active phase', () => {
   });
 
   it('goes back to a phase if a newly revealed step is unticked', () => {
-    let s = tickAll(tickAll(withParty(), 'time'), 'event');
+    let s = tickAll(tickAll(initialState(NOW), 'time'), 'event');
     expect(activePhaseId(phases, flags, s)).toBe('operations');
     s = apply(s, { type: 'setPhaseFlag', flagId: 'attack', value: true });
     expect(activePhaseId(phases, flags, s)).toBe('event');
   });
 
-  it('does not complete Downtime without a party', () => {
-    const s = initialState(NOW);
-    expect(phaseProgress(phase('downtime'), flags, s)).toEqual({ done: 0, total: 0, complete: false });
+  it('completes Downtime without a party set up', () => {
+    const s = tickAll(initialState(NOW), 'downtime');
+    expect(phaseProgress(phase('downtime'), flags, s)).toEqual({ done: 4, total: 4, complete: true });
   });
 
   it('ignores ticks on steps that are now hidden', () => {

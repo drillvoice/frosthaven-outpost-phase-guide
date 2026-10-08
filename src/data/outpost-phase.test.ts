@@ -22,13 +22,6 @@ describe('outpost-phase data', () => {
     for (const f of flags) for (const id of condFlags(f.showWhen)) expect(flagIds, `flag ${f.id}`).toContain(id);
   });
 
-  it('uses character flags only on per-character steps', () => {
-    const charFlags = new Set(flags.filter((f) => f.scope === 'character').map((f) => f.id));
-    for (const s of phases.flatMap((p) => p.steps)) {
-      if (!s.perCharacter) for (const id of [...condFlags(s.when), ...(s.asks ?? [])]) expect(charFlags.has(id), `step ${s.id}`).toBe(false);
-    }
-  });
-
   it('shows every hand-set toggle somewhere, and never a derived one', () => {
     const shown = new Set(phases.flatMap((p) => [...p.flags, ...p.steps.flatMap((s) => s.asks ?? [])]));
     for (const f of flags) expect(shown.has(f.id), f.id).toBe(f.scope !== 'derived');

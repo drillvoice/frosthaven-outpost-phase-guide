@@ -25,9 +25,10 @@ describe('saved data compatibility', () => {
   it('resumes a v1 save where it left off', () => {
     const s = migrate(structuredClone(saveV1), '2030-01-01T00:00:00.000Z');
     expect(activePhaseId(phases, flags, s)).toBe('event');
+    // Old per-character downtime ticks and toggles are ignored; the shared list starts fresh.
     const downtime = visibleSteps(phases.find((p) => p.id === 'downtime')!, flags, s).map((x) => x.key);
-    expect(downtime).toContain('downtime.retire@c2');
-    expect(downtime).not.toContain('downtime.retire@c1');
+    expect(downtime).toContain('downtime.review');
+    expect(downtime).not.toContain('downtime.retire');
   });
 });
 

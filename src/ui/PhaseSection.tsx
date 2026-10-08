@@ -1,12 +1,9 @@
-import { useState } from 'preact/hooks';
 import { flags as flagDefs } from '../data/outpost-phase';
 import type { FlagDef, PhaseDef } from '../data/types';
 import {
   flagLookup,
   groupSteps,
-  hasPerCharacterSteps,
   shownFlags,
-  sortedParty,
   visibleFlags,
   visibleSteps,
   type PhaseProgress,
@@ -27,19 +24,14 @@ interface Props {
   isActive: boolean;
   open: boolean;
   onToggleOpen: () => void;
-  onGoToParty: () => void;
 }
 
-export function PhaseSection({ phase, index, state, dispatch, progress, isActive, open, onToggleOpen, onGoToParty }: Props) {
+export function PhaseSection({ phase, index, state, dispatch, progress, isActive, open, onToggleOpen }: Props) {
   const steps = visibleSteps(phase, flagDefs, state);
-  const sharedSteps = steps.filter((s) => !s.charId);
-  const party = sortedParty(state);
-  const perChar = hasPerCharacterSteps(phase);
   const status = progress.complete ? 'done' : isActive ? 'active' : 'pending';
 
-  const setFlag = (charId?: string) => (f: FlagDef, value: boolean) => {
+  const setFlag = (f: FlagDef, value: boolean) => {
     if (f.scope === 'campaign') dispatch({ type: 'setCampaignFlag', flagId: f.id, value });
-    else if (f.scope === 'character' && charId) dispatch({ type: 'setCharFlag', charId, flagId: f.id, value });
     else dispatch({ type: 'setPhaseFlag', flagId: f.id, value });
   };
 
@@ -67,9 +59,9 @@ export function PhaseSection({ phase, index, state, dispatch, progress, isActive
               {s.step.asks && (
                 <FlagToggles
                   inline
-                  flags={shownFlags(s.step.asks, flagDefs, state, s.charId)}
-                  value={flagLookup(flagDefs, state, s.charId)}
-                  onChange={setFlag(s.charId)}
+                  flags={shownFlags(s.step.asks, flagDefs, state)}
+                  value={flagLookup(flagDefs, state)}
+                  onChange={setFlag}
                 />
               )}
             </StepRow>
@@ -99,71 +91,11 @@ export function PhaseSection({ phase, index, state, dispatch, progress, isActive
 
       {open && (
         <div class="phase-body">
-          <FlagToggles flags={visibleFlags(phase, flagDefs, state)} value={flagLookup(flagDefs, state)} onChange={setFlag()} />
-          {renderSteps(sharedSteps)}
-          {perChar && party.length === 0 && (
-            <div class="empty">
-              <p>Add your party to see each character's steps.</p>
-              <button type="button" class="btn" onClick={onGoToParty}>
-                Set up party
-              </button>
-            </div>
-          )}
-          {perChar &&
-            party.map(([charId, c]) => (
-              <CharacterBlock
-                key={charId}
-                name={c.name}
-                className={c.className}
-                flags={visibleFlags(phase, flagDefs, state, charId)}
-                value={flagLookup(flagDefs, state, charId)}
-                onFlag={setFlag(charId)}
-                steps={steps.filter((s) => s.charId === charId)}
-                checked={state.current.checked}
-                renderSteps={renderSteps}
-              />
-            ))}
-        </div>
-      )}
-    </section>
-  );
-}
-
-interface CharProps {
-  name: string;
-  className: string;
-  flags: FlagDef[];
-  value: (id: string) => boolean;
-  onFlag: (f: FlagDef, v: boolean) => void;
-  steps: StepInstance[];
-  checked: Record<string, true>;
-  renderSteps: (list: StepInstance[]) => preact.JSX.Element[];
-}
-
-function CharacterBlock({ name, className, flags, value, onFlag, steps, checked, renderSteps }: CharProps) {
-  const done = steps.filter((s) => checked[s.key]).length;
-  const complete = done === steps.length;
-  const [open, setOpen] = useState(true);
-  return (
-    <div class={`char${complete ? ' is-done' : ''}`}>
-      <button type="button" class="char-head" aria-expanded={open} onClick={() => setOpen(!open)}>
-        <span class="char-name">
-          {complete && '✓ '}
-          {name || 'Unnamed'}
-          {className && <span class="char-class"> · {className}</span>}
-        </span>
-        <span class="phase-count">
-          {done}/{steps.length}
-        </span>
-        <span class={`chev${open ? ' is-open' : ''}`} aria-hidden="true" />
-      </button>
-      {open && (
-        <div class="char-body">
-          <FlagToggles flags={flags} value={value} onChange={onFlag} />
+          <FlagToggles flags={visibleFlags(phase, flagDefs, state)} value={flagLookup(flagDefs, state)} onChange={setFlag} />
           {renderSteps(steps)}
         </div>
       )}
-    </div>
+    </section>
   );
 }
 
