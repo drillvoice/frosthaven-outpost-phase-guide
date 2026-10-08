@@ -11,6 +11,9 @@ Frosthaven Outpost Phase at the table (rulebook pp. 59–68).
   carry over to the next Outpost Phase; the rest reset.
 - Downtime is one shared list for the whole party; each player handles
   their own character and the group ticks a step once everyone is done.
+- **Party** tab: each character's level, with the party's total, average,
+  half average and scenario level (half the average, rounded up) for each
+  difficulty, plus how many more levels until the scenario level rises.
 - Tap ⓘ on a step for a short reminder and a **house notes** box. Notes are
   kept across phases (a dot on ⓘ means a note exists).
 - **Start new Outpost Phase** logs the current one (date, optional note) and

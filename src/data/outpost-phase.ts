@@ -208,7 +208,7 @@ export const phases: PhaseDef[] = [
         title: 'Level up (required)',
         when: { all: ['levelUpDue'] },
         reminder:
-          'XP is not spent. Add one ability card of the new level or lower to the pool, raise max HP to the red number on the mat\'s level track, gain a perk mark and choose a perk (p. 63).',
+          'XP is not spent. Add one ability card of the new level or lower to the pool, raise max HP to the red number on the mat\'s level track, gain a perk mark and choose a perk (p. 63). Update their level in the Party tab.',
       },
       {
         id: 'downtime.catchUp',
@@ -216,7 +216,7 @@ export const phases: PhaseDef[] = [
         title: 'Catch-up level up',
         when: { all: ['belowHalfProsperity'] },
         reminder:
-          'May level up without the XP, repeatedly, up to half prosperity (rounded up). Set XP to the new level\'s minimum. Normal level-up benefits apply.',
+          'May level up without the XP, repeatedly, up to half prosperity (rounded up). Set XP to the new level\'s minimum. Normal level-up benefits apply. Update the Party tab.',
       },
       {
         id: 'downtime.craft',
@@ -315,7 +315,7 @@ export const phases: PhaseDef[] = [
         optional: true,
         when: { all: ['building', 'prosperityRose'] },
         reminder:
-          'Anyone whose level is now below half the new prosperity (rounded up) may level up for free, up to that cap. Set XP to the new level\'s minimum.',
+          'Anyone whose level is now below half the new prosperity (rounded up) may level up for free, up to that cap. Set XP to the new level\'s minimum. Update the Party tab.',
       },
       {
         id: 'build.rebuild',

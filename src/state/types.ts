@@ -4,6 +4,8 @@
 export interface Character {
   name: string;
   className: string;
+  /** Character level, 1–9. Absent in saves from before levels were tracked (treat as 1). */
+  level?: number;
   /** Sort position in the party list. */
   order: number;
 }

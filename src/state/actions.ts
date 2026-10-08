@@ -9,8 +9,8 @@ export type Action =
   | { type: 'setPhaseFlag'; flagId: string; value: boolean }
   | { type: 'setCampaignFlag'; flagId: string; value: boolean }
   | { type: 'setHouseNote'; stepId: string; text: string }
-  | { type: 'addCharacter'; id: string; name: string; className: string }
-  | { type: 'updateCharacter'; id: string; patch: Partial<Pick<Character, 'name' | 'className'>> }
+  | { type: 'addCharacter'; id: string; name: string; className: string; level?: number }
+  | { type: 'updateCharacter'; id: string; patch: Partial<Pick<Character, 'name' | 'className' | 'level'>> }
   | { type: 'moveCharacter'; id: string; direction: -1 | 1 }
   | { type: 'removeCharacter'; id: string }
   | { type: 'startNewPhase'; logId: string; now: string; complete: boolean; note?: string }
@@ -82,7 +82,7 @@ export function reduce(state: AppState, action: Action): AppState {
       };
     case 'addCharacter': {
       const order = Math.max(-1, ...Object.values(state.party).map((c) => c.order)) + 1;
-      return { ...state, party: { ...state.party, [action.id]: { name: action.name, className: action.className, order } } };
+      return { ...state, party: { ...state.party, [action.id]: { name: action.name, className: action.className, level: action.level ?? 1, order } } };
     }
     case 'updateCharacter': {
       const existing = state.party[action.id];

@@ -114,3 +114,23 @@ test('works offline once loaded', async ({ page, context }) => {
   await page.getByRole('button', { name: 'Party', exact: true }).click();
   await expect(page.locator('.party-row')).toHaveCount(1);
 });
+
+test('tracks party levels and the scenario level', async ({ page }) => {
+  await addParty(page, [['Ann', 'Drifter'], ['Bo', 'Blinkblade']]);
+  await page.getByRole('button', { name: 'Party', exact: true }).click();
+  const summary = page.getByRole('region', { name: 'Party level' });
+  await expect(summary.locator('.level-num')).toHaveText('1');
+  await expect(summary).toContainText('3 more levels across the party → 2');
+
+  await page.getByLabel('Level of Ann', { exact: true }).fill('3');
+  await page.getByRole('button', { name: 'Level of Bo: more' }).click();
+  await expect(summary.locator('.level-num')).toHaveText('2');
+  await expect(summary).toContainText('Total5');
+  await expect(summary).toContainText('Average2.5');
+  await expect(summary).toContainText('Half avg.1.25');
+  await expect(summary).toContainText('Very hard4');
+
+  await page.reload();
+  await page.getByRole('button', { name: 'Party', exact: true }).click();
+  await expect(page.getByLabel('Level of Ann', { exact: true })).toHaveValue('3');
+});
