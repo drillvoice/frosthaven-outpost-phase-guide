@@ -24,8 +24,14 @@ Frosthaven Outpost Phase at the table (rulebook pp. 59–68).
   Outpost Phase (entries carry forward, p. 59). Once set up, ticking "Mark
   the next calendar box" marks the week, that week's sections appear as
   steps to tick, and the season (and event deck) follows the calendar.
-- Everything is saved on the device automatically. *Log & settings* has
-  backup export/import and light/dark mode.
+- Everything is saved on the device automatically, and the app asks the
+  browser to protect that storage from automatic clean-up. Because it lives
+  on one device, *Log & settings* has **Back up now** (on Android this opens
+  the share sheet, so the file can go straight to Google Drive) and
+  **Restore backup**. The checklist and the new-phase dialog remind you
+  when the last backup is over two weeks old.
+- Installs as an app from Chrome (an **Install app** button in settings, or
+  the ⋮ menu), then opens full screen and works offline.
 
 ## Editing steps
 
