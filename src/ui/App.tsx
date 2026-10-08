@@ -92,7 +92,7 @@ function App({ store, group }: { store: Store; group: string }) {
         </span>
       </header>
       <main>
-        {tab === 'checklist' && <Checklist state={state} dispatch={store.dispatch} />}
+        {tab === 'checklist' && <Checklist state={state} dispatch={store.dispatch} group={group} />}
         {tab === 'calendar' && <CalendarView state={state} dispatch={store.dispatch} />}
         {tab === 'party' && <PartyView state={state} dispatch={store.dispatch} />}
         {tab === 'log' && <LogView state={state} dispatch={store.dispatch} group={group} theme={theme} onTheme={setTheme} />}

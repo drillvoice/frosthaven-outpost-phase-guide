@@ -18,6 +18,7 @@ export default defineConfig({
       manifest: {
         name: 'Frosthaven Outpost Phase',
         short_name: 'Outpost',
+        id: './',
         description: 'Step-through checklist for the Frosthaven Outpost Phase',
         start_url: '.',
         scope: '.',

@@ -3,6 +3,7 @@ import { flags as flagDefs, phases } from '../data/outpost-phase';
 import { activePhaseId, phaseProgress } from '../logic/checklist';
 import type { Action } from '../state/actions';
 import type { AppState } from '../state/types';
+import { backupIsDue, describeBackupAge, saveBackup, useLastBackup } from './device';
 import { NewPhaseDialog } from './NewPhaseDialog';
 import { PhaseSection } from './PhaseSection';
 import { formatDate, newId } from './util';
@@ -10,9 +11,10 @@ import { formatDate, newId } from './util';
 interface Props {
   state: AppState;
   dispatch: (a: Action) => void;
+  group: string;
 }
 
-export function Checklist({ state, dispatch }: Props) {
+export function Checklist({ state, dispatch, group }: Props) {
   const active = activePhaseId(phases, flagDefs, state);
   // Manual open/closed overrides; cleared whenever the active phase moves on.
   const [overrides, setOverrides] = useState<Record<string, boolean>>({});
@@ -31,10 +33,23 @@ export function Checklist({ state, dispatch }: Props) {
   }, [active]);
 
   const allDone = active === null;
+  const lastBackup = useLastBackup(group);
+  // Nag only once there's something worth losing: at least one finished Outpost Phase.
+  const showBackupNudge = Object.keys(state.log).length > 0 && backupIsDue(lastBackup);
 
   return (
     <div class="checklist">
       <p class="meta">Started {formatDate(state.current.startedAt)}</p>
+      {showBackupNudge && (
+        <div class="backup-nudge" role="status">
+          <p>
+            Progress is saved only on this device. {describeBackupAge(lastBackup)}.
+          </p>
+          <button type="button" class="btn" onClick={() => void saveBackup(state, group)}>
+            Back up
+          </button>
+        </div>
+      )}
       {phases.map((phase, i) => {
         const progress = phaseProgress(phase, flagDefs, state);
         const open = overrides[phase.id] ?? phase.id === active;
@@ -65,6 +80,8 @@ export function Checklist({ state, dispatch }: Props) {
       {dialogOpen && (
         <NewPhaseDialog
           complete={allDone}
+          lastBackup={lastBackup}
+          onBackup={() => saveBackup(state, group)}
           onCancel={() => setDialogOpen(false)}
           onConfirm={(note) => {
             setDialogOpen(false);

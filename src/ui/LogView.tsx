@@ -3,6 +3,7 @@ import { migrate } from '../state/migrate';
 import type { Action } from '../state/actions';
 import type { AppState } from '../state/types';
 import { hashForGroup, sanitizeGroup } from '../route';
+import { describeBackupAge, saveBackup, useInstall, useLastBackup, usePersistence } from './device';
 import { formatDate } from './util';
 
 interface Props {
@@ -16,15 +17,9 @@ interface Props {
 export function LogView({ state, dispatch, group, theme, onTheme }: Props) {
   const entries = Object.entries(state.log).sort(([, a], [, b]) => b.endedAt.localeCompare(a.endedAt));
   const [groupInput, setGroupInput] = useState(group);
-
-  const exportJson = () => {
-    const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = `outpost-${group}-${new Date().toISOString().slice(0, 10)}.json`;
-    a.click();
-    URL.revokeObjectURL(a.href);
-  };
+  const lastBackup = useLastBackup(group);
+  const persistence = usePersistence();
+  const install = useInstall();
 
   const importJson = async (file: File | undefined) => {
     if (!file) return;
@@ -90,14 +85,49 @@ export function LogView({ state, dispatch, group, theme, onTheme }: Props) {
           </button>
         </form>
 
-        <div class="backup">
-          <button type="button" class="btn" onClick={exportJson}>
-            Export backup
-          </button>
-          <label class="btn">
-            Import backup
-            <input type="file" accept="application/json,.json" hidden onChange={(e) => importJson(e.currentTarget.files?.[0])} />
-          </label>
+        <div class="setting-block">
+          <h3>Backups</h3>
+          <p class="meta">
+            Progress is saved only on this device, so clearing browser data or changing phones loses it. Back up after each Outpost Phase; on
+            Android you can send the file straight to Google Drive. {describeBackupAge(lastBackup)}.
+          </p>
+          <div class="backup">
+            <button type="button" class="btn" onClick={() => void saveBackup(state, group)}>
+              Back up now
+            </button>
+            <label class="btn">
+              Restore backup
+              <input type="file" accept="application/json,.json" hidden onChange={(e) => importJson(e.currentTarget.files?.[0])} />
+            </label>
+          </div>
+          {persistence && (
+            <p class="meta" data-testid="persistence">
+              {persistence === 'persisted'
+                ? '✓ Storage is protected: the browser won\'t clear it to free up space.'
+                : persistence === 'not-persisted'
+                  ? 'The browser may clear storage if the phone runs low on space. Installing the app usually fixes this.'
+                  : 'This browser can\'t protect storage from being cleared, so keep backups.'}
+            </p>
+          )}
+        </div>
+
+        <div class="setting-block">
+          <h3>App</h3>
+          {install.state === 'installed' && <p class="meta">✓ Installed as an app.</p>}
+          {install.state === 'available' && (
+            <>
+              <p class="meta">Install to open it from your home screen, full screen and offline, like any other app.</p>
+              <button type="button" class="btn btn-primary" onClick={() => void install.install()}>
+                Install app
+              </button>
+            </>
+          )}
+          {install.state === 'manual' && (
+            <p class="meta">
+              To install, open the browser menu (⋮ in Chrome) and choose <strong>Install app</strong> or <strong>Add to Home screen</strong>. On
+              iPhone, use Share → <strong>Add to Home Screen</strong>.
+            </p>
+          )}
         </div>
       </div>
     </div>

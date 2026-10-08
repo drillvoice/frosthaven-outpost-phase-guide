@@ -792,6 +792,56 @@ input:focus {
   gap: 8px;
 }
 
+.setting-block {
+  display: grid;
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+.setting-block h3 {
+  font-size: 16px;
+}
+
+.setting-block .meta {
+  margin: 0;
+}
+
+.backup-nudge {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--warn);
+  border-radius: var(--radius);
+}
+
+.backup-nudge p {
+  flex: 1;
+  margin: 0;
+}
+
+.backup-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 12px 0 0;
+  color: var(--muted);
+}
+
+.backup-row.is-due {
+  color: var(--warn);
+}
+
+.backup-row .btn,
+.backup-nudge .btn {
+  flex: none;
+  color: var(--text);
+  white-space: nowrap;
+}
+
 .backup {
   display: grid;
   grid-template-columns: 1fr 1fr;
