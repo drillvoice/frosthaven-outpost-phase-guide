@@ -21,12 +21,12 @@ describe('reduce', () => {
       { type: 'setHouseNote', stepId: 'ops.resolve', text: 'Garden bonus!' },
       { type: 'setCampaignFlag', flagId: 'winter', value: true },
       { type: 'setPhaseFlag', flagId: 'attack', value: true },
-      { type: 'setCharFlag', charId: 'a', flagId: 'retiring', value: true },
+      { type: 'setPhaseFlag', flagId: 'retiring', value: true },
       { type: 'toggleStep', key: 'time.mark' },
       { type: 'startNewPhase', logId: 'L1', now: LATER, complete: true, note: '  Won scenario 5  ' },
     );
     expect(s.log.L1).toEqual({ startedAt: NOW, endedAt: LATER, complete: true, note: 'Won scenario 5' });
-    expect(s.current).toEqual({ startedAt: LATER, phaseFlags: {}, charFlags: {}, checked: {} });
+    expect(s.current).toEqual({ startedAt: LATER, phaseFlags: {}, checked: {} });
     expect(s.party.a.name).toBe('Ann');
     expect(s.houseNotes['ops.resolve']).toBe('Garden bonus!');
     expect(s.campaignFlags.winter).toBe(true);
@@ -37,7 +37,7 @@ describe('reduce', () => {
     expect(s.houseNotes).toEqual({});
   });
 
-  it('reorders and removes characters, dropping their ticks and flags', () => {
+  it('reorders and removes characters', () => {
     let s = apply(
       initialState(NOW),
       { type: 'addCharacter', id: 'a', name: 'Ann', className: '' },
@@ -45,11 +45,8 @@ describe('reduce', () => {
       { type: 'moveCharacter', id: 'b', direction: -1 },
     );
     expect(s.party.b.order).toBeLessThan(s.party.a.order);
-    s = apply(s, { type: 'toggleStep', key: 'downtime.craft@a' }, { type: 'toggleStep', key: 'time.mark' }, { type: 'setCharFlag', charId: 'a', flagId: 'retiring', value: true });
     s = apply(s, { type: 'removeCharacter', id: 'a' });
     expect(Object.keys(s.party)).toEqual(['b']);
-    expect(s.current.checked).toEqual({ 'time.mark': true });
-    expect(s.current.charFlags).toEqual({});
   });
 });
 

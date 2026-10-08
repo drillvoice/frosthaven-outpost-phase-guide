@@ -18,8 +18,8 @@ test('walks a full Outpost Phase and starts the next one', async ({ page }) => {
     await tickAll(page, id);
     await expectActive(page, next);
   }
-  // Downtime repeats per character.
-  await expect(phase(page, 'downtime').locator('.phase-count').first()).toHaveText('8/8');
+  // Downtime is one list for the whole party.
+  await expect(phase(page, 'downtime').locator('.phase-count')).toHaveText('4/4');
 
   await tickAll(page, 'construction');
   await expect(page.locator('.all-done')).toBeVisible();
@@ -62,13 +62,14 @@ test('toggles show and hide the steps they control', async ({ page }) => {
   await expect(event.locator('.step')).toHaveCount(1);
   await expect(event.getByText('No outpost event this week')).toBeVisible();
 
-  // Per-character toggles only affect that character.
-  await phase(page, 'downtime').locator('.phase-head').click();
-  const [ann, bo] = [phase(page, 'downtime').locator('.char').nth(0), phase(page, 'downtime').locator('.char').nth(1)];
-  await bo.getByText('Personal quest is complete (must retire)').click();
-  await expect(bo.getByText('Retire (required)')).toBeVisible();
-  await expect(bo.getByText('First character of this class to retire')).toBeVisible();
-  await expect(ann.getByText('Retire (required)')).toHaveCount(0);
+  // Downtime toggles are party-wide and reveal the steps someone needs.
+  const downtime = phase(page, 'downtime');
+  await downtime.locator('.phase-head').click();
+  await expect(downtime.locator('.char')).toHaveCount(0);
+  await expect(downtime.getByText('Retire (required)')).toHaveCount(0);
+  await downtime.getByText("Someone's personal quest is complete (must retire)").click();
+  await expect(downtime.getByText('Retire (required)')).toBeVisible();
+  await expect(downtime.getByText("They're the first of their class to retire")).toBeVisible();
 });
 
 test('resumes mid-phase after a reload, keeping house notes', async ({ page }) => {

@@ -10,10 +10,9 @@ import { formatDate, newId } from './util';
 interface Props {
   state: AppState;
   dispatch: (a: Action) => void;
-  onGoToParty: () => void;
 }
 
-export function Checklist({ state, dispatch, onGoToParty }: Props) {
+export function Checklist({ state, dispatch }: Props) {
   const active = activePhaseId(phases, flagDefs, state);
   // Manual open/closed overrides; cleared whenever the active phase moves on.
   const [overrides, setOverrides] = useState<Record<string, boolean>>({});
@@ -50,7 +49,6 @@ export function Checklist({ state, dispatch, onGoToParty }: Props) {
             isActive={phase.id === active}
             open={open}
             onToggleOpen={() => setOverrides({ ...overrides, [phase.id]: !open })}
-            onGoToParty={onGoToParty}
           />
         );
       })}

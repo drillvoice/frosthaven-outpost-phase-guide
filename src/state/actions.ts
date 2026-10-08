@@ -7,7 +7,6 @@ export type Action =
   /** markWeek: the step is tied to the calendar, so ticking marks the next week and unticking undoes it. */
   | { type: 'toggleStep'; key: string; markWeek?: { now: string } }
   | { type: 'setPhaseFlag'; flagId: string; value: boolean }
-  | { type: 'setCharFlag'; charId: string; flagId: string; value: boolean }
   | { type: 'setCampaignFlag'; flagId: string; value: boolean }
   | { type: 'setHouseNote'; stepId: string; text: string }
   | { type: 'addCharacter'; id: string; name: string; className: string }
@@ -26,7 +25,7 @@ export type Action =
   | { type: 'replaceState'; state: AppState };
 
 export function emptyPhase(now: string): CurrentPhase {
-  return { startedAt: now, phaseFlags: {}, charFlags: {}, checked: {} };
+  return { startedAt: now, phaseFlags: {}, checked: {} };
 }
 
 export function initialState(now: string): AppState {
@@ -74,10 +73,6 @@ export function reduce(state: AppState, action: Action): AppState {
     }
     case 'setPhaseFlag':
       return { ...state, current: { ...cur, phaseFlags: { ...cur.phaseFlags, [action.flagId]: action.value } } };
-    case 'setCharFlag': {
-      const forChar = { ...cur.charFlags[action.charId], [action.flagId]: action.value };
-      return { ...state, current: { ...cur, charFlags: { ...cur.charFlags, [action.charId]: forChar } } };
-    }
     case 'setCampaignFlag':
       return { ...state, campaignFlags: { ...state.campaignFlags, [action.flagId]: action.value } };
     case 'setHouseNote':
@@ -104,15 +99,8 @@ export function reduce(state: AppState, action: Action): AppState {
       sorted.forEach(([id, c], order) => (party[id] = { ...c, order }));
       return { ...state, party };
     }
-    case 'removeCharacter': {
-      const prefix = `@${action.id}`;
-      const checked = Object.fromEntries(Object.entries(cur.checked).filter(([k]) => !k.endsWith(prefix))) as Record<string, true>;
-      return {
-        ...state,
-        party: omit(state.party, action.id),
-        current: { ...cur, checked, charFlags: omit(cur.charFlags, action.id) },
-      };
-    }
+    case 'removeCharacter':
+      return { ...state, party: omit(state.party, action.id) };
     case 'startNewPhase': {
       const entry = {
         startedAt: cur.startedAt,

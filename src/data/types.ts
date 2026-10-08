@@ -5,11 +5,10 @@
 /**
  * Where a toggle's value lives:
  * - phase:     resets when a new Outpost Phase starts
- * - character: one value per character, resets each Outpost Phase
  * - campaign:  persists across Outpost Phases until you change it
  * - derived:   computed from tracked state (e.g. the calendar); never toggled by hand
  */
-export type FlagScope = 'phase' | 'character' | 'campaign' | 'derived';
+export type FlagScope = 'phase' | 'campaign' | 'derived';
 
 export interface Condition {
   /** Every listed flag must be on. */
@@ -40,8 +39,6 @@ export interface StepDef {
   when?: Condition;
   /** The party may choose to do it; a tick means "considered". */
   optional?: boolean;
-  /** Repeat once per party member. */
-  perCharacter?: boolean;
   /** Sub-heading within the phase; consecutive steps with the same group share it. */
   group?: string;
   /** Toggles shown directly under this step, for questions the step raises. */

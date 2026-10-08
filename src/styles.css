@@ -545,43 +545,6 @@ input:focus {
   outline-offset: 0;
 }
 
-/* Characters -------------------------------------------------------------- */
-
-.char {
-  margin-top: 10px;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  background: var(--bg);
-}
-
-.char-head {
-  min-height: 56px;
-}
-
-.char-name {
-  flex: 1;
-  font-weight: 650;
-}
-
-.char.is-done .char-name {
-  color: var(--done);
-}
-
-.char-class {
-  color: var(--muted);
-  font-weight: 400;
-}
-
-.char-body {
-  padding: 0 6px 8px;
-}
-
-.empty {
-  padding: 16px;
-  text-align: center;
-  color: var(--muted);
-}
-
 /* Buttons ----------------------------------------------------------------- */
 
 .btn {

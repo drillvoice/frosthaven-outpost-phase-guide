@@ -25,7 +25,7 @@ export function PartyView({ state, dispatch }: Props) {
   return (
     <div class="party">
       <h2>Party</h2>
-      <p class="meta">Downtime steps repeat for each character. The party stays when you start a new Outpost Phase.</p>
+      <p class="meta">A roster of who's playing. Downtime is one shared list; each player handles their own character. The party stays when you start a new Outpost Phase.</p>
       <ul class="party-list">
         {party.map(([id, c], i) => (
           <li class="party-row" key={id}>

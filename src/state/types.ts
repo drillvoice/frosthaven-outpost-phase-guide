@@ -39,9 +39,7 @@ export interface Calendar {
 export interface CurrentPhase {
   startedAt: string;
   phaseFlags: Record<string, boolean>;
-  /** charId -> flagId -> value */
-  charFlags: Record<string, Record<string, boolean>>;
-  /** 'stepId', 'stepId@charId', or 'cal:entryId' for calendar sections */
+  /** 'stepId', or 'cal:entryId' for calendar sections */
   checked: Record<string, true>;
   /** The calendar week marked by this Outpost Phase's Passage of Time step. */
   markedWeek?: number;
